@@ -102,6 +102,22 @@ services:
     networks:
       - mcp-network
 
+  # ================================
+  # OpenAI Gateway MCP
+  # ================================
+  igo-openai-gateway:
+    build: ./igo-openai-gateway
+    container_name: igo-openai-gateway
+    stdin_open: true
+    tty: true
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    volumes:
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
 networks:
   mcp-network:
     driver: bridge

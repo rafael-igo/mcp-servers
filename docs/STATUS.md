@@ -1,7 +1,7 @@
 # Status dos MCPs
 
 **Última atualização:** 2026-01-25 (18:30)
-**Status Geral:** ✅ 8 MCPs ATIVOS
+**Status Geral:** ✅ 9 MCPs ATIVOS
 
 ## MCPs Ativos
 
@@ -48,11 +48,17 @@
   - Auto-healing
   - Logs centralizados
 
+### 9. igo-openai-gateway
+- Container: `igo-openai-gateway`
+- Status: ✅ Rodando
+- Ferramentas: 2
+- Requer: `OPENAI_API_KEY` no ambiente
+
 ## Configuração Claude Desktop
 
 **Arquivo:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 
-Configurado com todos os 8 MCPs.
+Configurado com todos os 9 MCPs.
 
 ## Documentação
 

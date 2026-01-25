@@ -7,11 +7,11 @@
 
 ## 📋 Visão Geral
 
-Este diretório contém **8 MCPs (Model Context Protocol servers)** que fornecem ferramentas especializadas para gerenciamento, desenvolvimento e operação do projeto I GO Experience.
+Este diretório contém **9 MCPs (Model Context Protocol servers)** que fornecem ferramentas especializadas para gerenciamento, desenvolvimento e operação do projeto I GO Experience.
 
 ```
 api/mcp-servers/
-├── MCPs (7 servidores ativos)
+├── MCPs (8 servidores ativos)
 ├── docs/ (Documentação e dados)
 └── docker-compose.yml (Orquestração)
 ```
@@ -34,6 +34,7 @@ api/mcp-servers/
 ├── agente-insights/            # MCP #5: Captura de insights
 ├── agente-resumo/              # MCP #6: Geração de resumos
 ├── docker-admin/               # MCP #7: Administração Docker
+├── igo-openai-gateway/         # MCP #8: OpenAI Gateway
 │
 └── docs/                       # Documentação e dados centralizados
 ```
@@ -325,6 +326,33 @@ api/mcp-servers/
 
 ---
 
+### 8. igo-openai-gateway
+
+**Container:** `igo-openai-gateway`
+**Propósito:** Gateway MCP para executar tarefas via OpenAI Responses API
+
+#### Arquivos:
+- **server.py**
+  - Ferramentas principais:
+    - `run_prompt()` - Execução direta de prompt
+    - `run_agent()` - Execução com PROMPT.md + contexto
+
+- **requirements.txt**
+  ```
+  mcp
+  openai>=1.0.0
+  ```
+
+#### Configuração:
+- Necessário `OPENAI_API_KEY` via variável de ambiente
+
+#### Casos de Uso:
+- Análises profundas com GPT
+- Síntese de insights
+- Execução de agentes com contexto do projeto
+
+---
+
 ## 📚 Diretório docs/
 
 ### Estrutura:
@@ -384,7 +412,7 @@ docs/
 ## 🔧 Arquivo docker-compose.yml
 
 ### Propósito:
-Orquestrar todos os 7 MCPs em containers isolados
+Orquestrar todos os 8 MCPs em containers isolados
 
 ### Estrutura:
 
@@ -801,7 +829,7 @@ networks:
 
 ### test-mcps.sh
 
-**Propósito:** Testar todos os 7 MCPs automaticamente
+**Propósito:** Testar todos os 8 MCPs automaticamente
 
 **Uso:**
 ```bash
@@ -832,7 +860,7 @@ cd /Users/rafamacpro/Projetos/GIT/Transfer-logistica/api/mcp-servers/docs
 ...
 
 📊 Resumo:
-✅ 7/7 MCPs funcionando
+✅ 8/8 MCPs funcionando
 ```
 
 ---
@@ -851,7 +879,7 @@ cd /Users/rafamacpro/Projetos/GIT/Transfer-logistica/api/mcp-servers/docs
 1. Detecta sistema operacional (macOS/Linux/Windows)
 2. Localiza diretório de configuração do Claude
 3. Faz backup da configuração atual
-4. Copia configuração dos 8 MCPs
+4. Copia configuração dos 9 MCPs
 5. Instrui a reiniciar o Claude Desktop
 
 **Paths de configuração:**

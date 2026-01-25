@@ -8,7 +8,7 @@
 
 ## 🎯 O que é este projeto?
 
-Sistema de **8 MCPs (Model Context Protocol servers)** que fornecem ferramentas especializadas para desenvolvimento do **I GO Experience** - plataforma de gerenciamento de viagens de incentivo internacionais.
+Sistema de **9 MCPs (Model Context Protocol servers)** que fornecem ferramentas especializadas para desenvolvimento do **I GO Experience** - plataforma de gerenciamento de viagens de incentivo internacionais.
 
 ---
 
@@ -29,7 +29,7 @@ Sistema de **8 MCPs (Model Context Protocol servers)** que fornecem ferramentas 
 ## 🏗️ Arquitetura em 5 Linhas
 
 ```
-7 MCPs Docker →
+8 MCPs Docker →
   → excel-server (processa Excel)
   → agente-orchestrator (orquestra 4 agentes de domínio)
   → memory-manager (contexto persistente)
@@ -46,7 +46,7 @@ Sistema de **8 MCPs (Model Context Protocol servers)** que fornecem ferramentas 
 ```
 api/mcp-servers/
 │
-├── [7 MCPs]                    # 3,685 linhas Python, 42 ferramentas
+├── [8 MCPs]                    # 3,685 linhas Python, 42 ferramentas
 │   ├── excel-server/
 │   ├── agente-orchestrator/
 │   ├── memory-manager/
@@ -261,7 +261,7 @@ validate_checklist("mvp-completo.md")
 ## 🔥 Pontos Críticos
 
 ### ✅ O que está funcionando:
-1. **Todos os 7 MCPs operacionais** e testados
+1. **Todos os 8 MCPs operacionais** e testados
 2. **4 agentes especializados** com documentação completa
 3. **Sistema de memória** persistente entre sessões
 4. **Checklists** rastreando progresso

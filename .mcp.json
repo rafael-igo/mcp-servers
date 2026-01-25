@@ -1,17 +1,5 @@
 {
   "mcpServers": {
-    "igo-memory": {
-      "command": "docker",
-      "args": [
-        "exec",
-        "-i",
-        "igo-memory-server-mcp-server-1",
-        "python",
-        "-m",
-        "src.main"
-      ],
-      "env": {}
-    },
     "excel-server": {
       "command": "docker",
       "args": [

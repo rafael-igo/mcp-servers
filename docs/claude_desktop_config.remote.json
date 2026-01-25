@@ -1,20 +1,10 @@
 {
   "mcpServers": {
-    "igo-memory": {
-      "command": "docker",
-      "args": [
-        "exec",
-        "-i",
-        "igo-memory-server-mcp-server-1",
-        "python",
-        "-m",
-        "src.main"
-      ],
-      "env": {}
-    },
     "excel-server": {
-      "command": "docker",
+      "command": "ssh",
       "args": [
+        "usuario@15.15.255.9",
+        "docker",
         "exec",
         "-i",
         "igo-excel-server",
@@ -24,8 +14,10 @@
       "env": {}
     },
     "agente-orchestrator": {
-      "command": "docker",
+      "command": "ssh",
       "args": [
+        "usuario@15.15.255.9",
+        "docker",
         "exec",
         "-i",
         "igo-agente-orchestrator",
@@ -35,8 +27,10 @@
       "env": {}
     },
     "memory-manager": {
-      "command": "docker",
+      "command": "ssh",
       "args": [
+        "usuario@15.15.255.9",
+        "docker",
         "exec",
         "-i",
         "igo-memory-manager",
@@ -46,8 +40,10 @@
       "env": {}
     },
     "checklist-validator": {
-      "command": "docker",
+      "command": "ssh",
       "args": [
+        "usuario@15.15.255.9",
+        "docker",
         "exec",
         "-i",
         "igo-checklist-validator",
@@ -57,8 +53,10 @@
       "env": {}
     },
     "agente-insights": {
-      "command": "docker",
+      "command": "ssh",
       "args": [
+        "usuario@15.15.255.9",
+        "docker",
         "exec",
         "-i",
         "igo-agente-insights",
@@ -68,8 +66,10 @@
       "env": {}
     },
     "agente-resumo": {
-      "command": "docker",
+      "command": "ssh",
       "args": [
+        "usuario@15.15.255.9",
+        "docker",
         "exec",
         "-i",
         "igo-agente-resumo",
@@ -79,22 +79,13 @@
       "env": {}
     },
     "docker-admin": {
-      "command": "docker",
+      "command": "ssh",
       "args": [
+        "usuario@15.15.255.9",
+        "docker",
         "exec",
         "-i",
         "igo-docker-admin",
-        "python",
-        "server.py"
-      ],
-      "env": {}
-    },
-    "igo-openai-gateway": {
-      "command": "docker",
-      "args": [
-        "exec",
-        "-i",
-        "igo-openai-gateway",
         "python",
         "server.py"
       ],

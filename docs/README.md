@@ -210,6 +210,11 @@ Adicione ao seu `claude_desktop_config.json`:
       "command": "docker",
       "args": ["exec", "-i", "igo-docker-admin", "python", "server.py"],
       "env": {}
+    },
+    "igo-openai-gateway": {
+      "command": "docker",
+      "args": ["exec", "-i", "igo-openai-gateway", "python", "server.py"],
+      "env": {}
     }
   }
 }
@@ -217,6 +222,13 @@ Adicione ao seu `claude_desktop_config.json`:
 
 **Reinicie o Claude Desktop após configurar.**
 
+<<<<<<< ours
+=======
+### Variáveis de Ambiente (OpenAI)
+
+Para o `igo-openai-gateway`, defina `OPENAI_API_KEY` no host ou via `.env` do Docker Compose.
+
+>>>>>>> theirs
 ### Configuração Remota (Servidor Docker)
 
 Se os MCPs estiverem rodando em um servidor remoto, use SSH para executar os containers via `docker exec`.
@@ -255,6 +267,9 @@ echo '{"method":"tools/list"}' | docker exec -i igo-agente-resumo python server.
 
 # Testar docker-admin
 echo '{"method":"tools/list"}' | docker exec -i igo-docker-admin python server.py
+
+# Testar igo-openai-gateway
+echo '{"method":"tools/list"}' | docker exec -i igo-openai-gateway python server.py
 ```
 
 ## 📊 Status dos MCPs

@@ -4,7 +4,7 @@
 
 **Ver lista completa de MCPs e suas funcionalidades:** [LISTA_MCPS.md](LISTA_MCPS.md)
 
-Este guia cobre a instalação e configuração de **7 MCPs** para o projeto I GO Experience.
+Este guia cobre a instalação e configuração de **8 MCPs** para o projeto I GO Experience.
 
 ## 🎯 Passo a Passo
 
@@ -28,6 +28,10 @@ docker-compose ps
 - igo-agente-insights
 - igo-agente-resumo
 - igo-docker-admin
+- igo-openai-gateway
+
+**Variável necessária:**
+- `OPENAI_API_KEY` (para o igo-openai-gateway)
 
 ### 2. Configurar Claude Desktop
 
@@ -274,7 +278,7 @@ Se tiver problemas:
 
 ## 🎉 Sucesso!
 
-Se tudo funcionou, você agora tem 8 MCPs ativos:
+Se tudo funcionou, você agora tem 9 MCPs ativos:
 
 1. ✅ igo-memory (original)
 2. ✅ excel-server

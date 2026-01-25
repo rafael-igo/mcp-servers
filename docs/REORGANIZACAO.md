@@ -220,7 +220,7 @@ cd docs
 - ✅ Nenhum path legado (projeto-claude) restante
 - ✅ Auto-criação de diretórios e arquivos
 - ✅ Docker-compose atualizado
-- ✅ Claude Desktop config atualizado (8 MCPs)
+- ✅ Claude Desktop config atualizado (9 MCPs)
 
 ## Próximos Passos
 
@@ -248,6 +248,6 @@ validate_checklist("mvp.md")  # Se existir
 - ✅ Tudo centralizado em `api/mcp-servers/docs/`
 - ✅ MCPs criam estrutura automaticamente se não existir
 - ✅ docker-admin gerencia toda infraestrutura
-- ✅ 8 MCPs ativos e funcionais
+- ✅ 9 MCPs ativos e funcionais
 
 **Reorganização completa em:** 2026-01-25 (18:45)

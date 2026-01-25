@@ -2,7 +2,7 @@
 
 ## 📋 Visão Geral
 
-Este projeto possui **8 MCPs** (Model Context Protocol servers) ativos que fornecem ferramentas especializadas para o desenvolvimento do sistema I GO Experience.
+Este projeto possui **9 MCPs** (Model Context Protocol servers) ativos que fornecem ferramentas especializadas para o desenvolvimento do sistema I GO Experience.
 
 ## 🔧 MCPs Disponíveis
 
@@ -188,6 +188,24 @@ Este projeto possui **8 MCPs** (Model Context Protocol servers) ativos que forne
 - Atualização de MCPs
 
 ---
+
+### 9. igo-openai-gateway
+**Container:** `igo-openai-gateway`
+**Diretório:** `api/mcp-servers/igo-openai-gateway/`
+
+**Descrição:** Gateway MCP para executar tarefas via OpenAI Responses API.
+
+**Ferramentas:**
+- `run_prompt()` - Executa prompt direto com OpenAI
+- `run_agent()` - Executa agente usando PROMPT.md + contexto
+
+**Configuração:**
+- Necessário `OPENAI_API_KEY` como variável de ambiente
+
+**Casos de Uso:**
+- Análises profundas com GPT
+- Síntese de insights e decisões
+- Execução de agentes com contexto do projeto
 
 ## 🚀 Como Usar
 
