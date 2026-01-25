@@ -1,0 +1,107 @@
+services:
+  # ================================
+  # Excel Server MCP
+  # ================================
+  excel-server:
+    build: ./excel-server
+    container_name: igo-excel-server
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # ================================
+  # Agente Orchestrator MCP
+  # ================================
+  agente-orchestrator:
+    build: ./agente-orchestrator
+    container_name: igo-agente-orchestrator
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # ================================
+  # Memory Manager MCP
+  # ================================
+  memory-manager:
+    build: ./memory-manager
+    container_name: igo-memory-manager
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../../:/project  # Read-write para atualizar memória
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # ================================
+  # Checklist Validator MCP
+  # ================================
+  checklist-validator:
+    build: ./checklist-validator
+    container_name: igo-checklist-validator
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../../:/project  # Read-write para atualizar checklists
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # ================================
+  # Agente Insights MCP
+  # ================================
+  agente-insights:
+    build: ./agente-insights
+    container_name: igo-agente-insights
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./docs:/app/docs  # Persistência de insights
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # ================================
+  # Agente Resumo MCP
+  # ================================
+  agente-resumo:
+    build: ./agente-resumo
+    container_name: igo-agente-resumo
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./docs:/app/docs  # Persistência de dados
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # ================================
+  # Docker Admin MCP
+  # ================================
+  docker-admin:
+    build: ./docker-admin
+    container_name: igo-docker-admin
+    stdin_open: true
+    tty: true
+    privileged: true  # Necessário para gerenciar Docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Socket do Docker
+      - ./docs:/app/docs  # Documentação
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+networks:
+  mcp-network:
+    driver: bridge
