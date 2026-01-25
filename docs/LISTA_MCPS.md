@@ -49,6 +49,19 @@ Este projeto possui **8 MCPs** (Model Context Protocol servers) ativos que forne
 - agente-transfer
 - agente-checkin
 - agente-backend
+- agente-tracking
+- agente-credenciamento
+- agente-rsvp
+- agente-arquiteto-igo
+- agente-frontend-igo
+- agente-integracoes-igo
+- agente-qa-testes
+- agente-comercial-igo
+- agente-marketing-igo
+- agente-diretoria-igo
+- agente-operacao-igo
+- agente-solucoes
+- agente-analytics-kpi
 
 ---
 
