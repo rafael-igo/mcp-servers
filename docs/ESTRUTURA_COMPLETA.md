@@ -90,9 +90,9 @@ api/mcp-servers/
     MEMORIA_DIR = DOCS_DIR / "memoria"
     ```
 
-  - **Detecta 7 itens:**
-    - 3 MCPs hardcoded: agente-insights, agente-resumo, vuetify-uiux
-    - 4 agentes dinâmicos: transfer, rooming-list, checkin, backend
+  - **Detecta MCPs e agentes disponíveis:**
+    - MCPs hardcoded: agente-insights, agente-resumo, vuetify-uiux
+    - Agentes dinâmicos: todos os diretórios `docs/agentes/agente-*`
 
 - **requirements.txt**
   ```

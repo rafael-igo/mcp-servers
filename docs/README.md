@@ -217,6 +217,12 @@ Adicione ao seu `claude_desktop_config.json`:
 
 **Reinicie o Claude Desktop após configurar.**
 
+### Configuração Remota (Servidor Docker)
+
+Se os MCPs estiverem rodando em um servidor remoto, use SSH para executar os containers via `docker exec`.
+
+➡️ Consulte: [Configuração MCP em Servidor Remoto](SETUP_REMOTE_MCP.md)
+
 ## 🧪 Testar MCPs
 
 **NOVO:** Use o script automatizado:
