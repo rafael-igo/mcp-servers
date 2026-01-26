@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(powershell:*)",
-      "Bash(ssh:*)"
+      "Bash(ssh:*)",
+      "mcp__docker-admin__get_mcp_status",
+      "mcp__agente-orchestrator__list_agents",
+      "mcp__docker-admin__health_check"
     ]
   },
   "enableAllProjectMcpServers": true

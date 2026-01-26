@@ -5,6 +5,7 @@ Agente Orchestrator MCP
 Orquestração de agentes especializados do projeto.
 """
 
+import errno
 import sys
 import json
 from pathlib import Path
@@ -30,8 +31,15 @@ def list_agents() -> str:
         JSON string com lista de agentes
     """
     try:
-        # Garantir que diretório de agentes existe
-        AGENTES_DIR.mkdir(parents=True, exist_ok=True)
+        # Garantir que diretório de agentes existe (se o volume permitir escrita)
+        read_only = False
+        try:
+            AGENTES_DIR.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            if e.errno in (errno.EROFS, errno.EACCES):
+                read_only = True
+            else:
+                raise
 
         # Listar MCPs disponíveis
         mcps = [
@@ -81,12 +89,19 @@ def list_agents() -> str:
 
                     agents.append(agent_info)
 
+        note = "MCPs ativos. Use tools diretas dos MCPs ou agentes em /docs/agentes."
+        if read_only and not AGENTES_DIR.exists():
+            note = (
+                "MCPs ativos. Diretório /docs/agentes em modo somente leitura; "
+                "nenhum diretório foi criado."
+            )
+
         return json.dumps({
             "success": True,
             "count": len(mcps) + len(agents),
             "mcps": mcps,
             "agents": agents,
-            "note": "MCPs ativos. Use tools diretas dos MCPs ou agentes em /docs/agentes."
+            "note": note
         }, indent=2)
 
     except Exception as e:
@@ -224,8 +239,16 @@ def update_agent_memory(action: str, details: str) -> str:
         JSON string confirmando atualização
     """
     try:
-        # Garantir que diretório de memória existe
-        MEMORIA_DIR.mkdir(parents=True, exist_ok=True)
+        # Garantir que diretório de memória existe (se o volume permitir escrita)
+        try:
+            MEMORIA_DIR.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            if e.errno in (errno.EROFS, errno.EACCES):
+                return json.dumps({
+                    "success": False,
+                    "error": "Memoria em modo somente leitura; use memory-manager para atualizar."
+                })
+            raise
         ultimas_acoes_file = MEMORIA_DIR / "ultimas-acoes.md"
 
         if not ultimas_acoes_file.exists():
