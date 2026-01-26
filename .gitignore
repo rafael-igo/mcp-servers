@@ -10,7 +10,8 @@ __pycache__/
 .ruff_cache/
 .coverage
 htmlcov/
-
+.mcp.local.json
+.mcp.json
 # Virtual environments
 .venv/
 venv/
