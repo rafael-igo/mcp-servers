@@ -90,6 +90,32 @@
         "server.py"
       ],
       "env": {}
+    },
+    "igo-openai-gateway": {
+      "command": "ssh",
+      "args": [
+        "rafael@15.15.255.9",
+        "docker",
+        "exec",
+        "-i",
+        "igo-openai-gateway",
+        "python",
+        "server.py"
+      ],
+      "env": {}
+    },
+    "api-database-tester": {
+      "command": "ssh",
+      "args": [
+        "rafael@15.15.255.9",
+        "docker",
+        "exec",
+        "-i",
+        "igo-api-database-tester",
+        "python",
+        "server.py"
+      ],
+      "env": {}
     }
   }
 }

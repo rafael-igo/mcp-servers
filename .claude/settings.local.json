@@ -3,9 +3,24 @@
     "allow": [
       "Bash(powershell:*)",
       "Bash(ssh:*)",
-      "mcp__docker-admin__get_mcp_status",
-      "mcp__agente-orchestrator__list_agents",
-      "mcp__docker-admin__health_check"
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "mcp__docker-admin__*",
+      "mcp__agente-orchestrator__*",
+      "mcp__memory-manager__load_context",
+      "mcp__memory-manager__save_context",
+      "mcp__memory-manager__get_memory_summary",
+      "mcp__memory-manager__get_next_steps",
+      "mcp__agente-resumo__get_project_status",
+      "mcp__agente-resumo__get_next_steps",
+      "mcp__agente-resumo__get_metrics",
+      "mcp__agente-insights__capture_insight",
+      "mcp__agente-insights__get_insights",
+      "mcp__checklist-validator__list_checklists",
+      "mcp__checklist-validator__get_pending_tasks",
+      "mcp__excel-server__*",
+      "mcp__igo-openai-gateway__list_available_agents",
+      "mcp__api-database-tester__*"
     ]
   },
   "enableAllProjectMcpServers": true

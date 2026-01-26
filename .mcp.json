@@ -87,6 +87,17 @@
         "server.py"
       ],
       "env": {}
+    },
+    "api-database-tester": {
+      "command": "docker",
+      "args": [
+        "exec",
+        "-i",
+        "igo-api-database-tester",
+        "python",
+        "server.py"
+      ],
+      "env": {}
     }
   }
 }

@@ -60,6 +60,18 @@ def list_agents() -> str:
                 "type": "mcp",
                 "title": "Agente UI/UX Design",
                 "description": "Design, layouts Vuetify 3, boas práticas e padrões visuais"
+            },
+            {
+                "name": "igo-openai-gateway",
+                "type": "mcp",
+                "title": "OpenAI Gateway",
+                "description": "Gateway GPT-5.2 para agentes de IA, análise de código e arquitetura"
+            },
+            {
+                "name": "api-database-tester",
+                "type": "mcp",
+                "title": "API & Database Tester",
+                "description": "Executa requisições HTTP e queries SQL em SQL Server/PostgreSQL"
             }
         ]
 

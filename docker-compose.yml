@@ -118,6 +118,22 @@ services:
     networks:
       - mcp-network
 
+  # ================================
+  # API & Database Tester MCP
+  # ================================
+  api-database-tester:
+    build: ./api-database-tester
+    container_name: igo-api-database-tester
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    environment:
+      - DEFAULT_TIMEOUT=30
+
 networks:
   mcp-network:
     driver: bridge
