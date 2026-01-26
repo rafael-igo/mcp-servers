@@ -21,7 +21,14 @@
       "mcp__excel-server__*",
       "mcp__igo-openai-gateway__list_available_agents",
       "mcp__api-database-tester__*",
-      "mcp__vuetify-uiux__*"
+      "mcp__vuetify-uiux__*",
+      "mcp__memory-manager__get_project_context",
+      "mcp__agente-insights__get_project_context",
+      "mcp__agente-resumo__get_project_context",
+      "Bash(python:*)",
+      "mcp__memory-manager__list_all_projects",
+      "mcp__agente-insights__get_statistics",
+      "mcp__agente-resumo__list_all_projects"
     ]
   },
   "enableAllProjectMcpServers": true

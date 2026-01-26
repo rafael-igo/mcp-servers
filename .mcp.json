@@ -1,132 +1,82 @@
 {
   "mcpServers": {
     "excel-server": {
-      "command": "ssh",
+      "command": "python",
       "args": [
-        "rafael@15.15.255.9",
-        "docker",
-        "exec",
-        "-i",
-        "igo-excel-server",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/excel-server/server.py"
       ],
       "env": {}
     },
     "agente-orchestrator": {
-      "command": "ssh",
+      "command": "python",
       "args": [
-        "rafael@15.15.255.9",
-        "docker",
-        "exec",
-        "-i",
-        "igo-agente-orchestrator",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/agente-orchestrator/server.py"
       ],
       "env": {}
     },
     "memory-manager": {
-      "command": "ssh",
+      "command": "python",
       "args": [
-        "rafael@15.15.255.9",
-        "docker",
-        "exec",
-        "-i",
-        "igo-memory-manager",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/memory-manager/server.py"
       ],
       "env": {}
     },
     "checklist-validator": {
-      "command": "ssh",
+      "command": "python",
       "args": [
-        "rafael@15.15.255.9",
-        "docker",
-        "exec",
-        "-i",
-        "igo-checklist-validator",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/checklist-validator/server.py"
       ],
       "env": {}
     },
     "agente-insights": {
-      "command": "ssh",
+      "command": "python",
       "args": [
-        "rafael@15.15.255.9",
-        "docker",
-        "exec",
-        "-i",
-        "igo-agente-insights",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/agente-insights/server.py"
       ],
       "env": {}
     },
     "agente-resumo": {
-      "command": "ssh",
+      "command": "python",
       "args": [
-        "rafael@15.15.255.9",
-        "docker",
-        "exec",
-        "-i",
-        "igo-agente-resumo",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/agente-resumo/server.py"
       ],
       "env": {}
     },
     "docker-admin": {
-      "command": "ssh",
+      "command": "docker",
       "args": [
-        "rafael@15.15.255.9",
-        "docker",
         "exec",
         "-i",
         "igo-docker-admin",
         "python",
         "server.py"
       ],
-      "env": {}
+      "env": {},
+      "comment": "Precisa de Docker (gerencia containers)"
     },
     "igo-openai-gateway": {
-      "command": "ssh",
+      "command": "python",
       "args": [
-        "rafael@15.15.255.9",
-        "docker",
-        "exec",
-        "-i",
-        "igo-openai-gateway",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/igo-openai-gateway/server.py"
       ],
       "env": {}
     },
     "api-database-tester": {
-      "command": "ssh",
+      "command": "docker",
       "args": [
-        "rafael@15.15.255.9",
-        "docker",
         "exec",
         "-i",
         "igo-api-database-tester",
         "python",
         "server.py"
       ],
-      "env": {}
+      "env": {},
+      "comment": "Precisa de Docker (ODBC Driver 18 Linux)"
     },
     "vuetify-uiux": {
-      "command": "ssh",
+      "command": "python",
       "args": [
-        "rafael@15.15.255.9",
-        "docker",
-        "exec",
-        "-i",
-        "igo-vuetify-uiux",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/vuetify-uiux/server.py"
       ],
       "env": {}
     }
