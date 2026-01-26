@@ -36,7 +36,7 @@ Exemplo para Claude Desktop / VSCode (no arquivo `mcp.json` ou `claude_desktop_c
     "agente-orchestrator": {
       "command": "ssh",
       "args": [
-        "usuario@15.15.255.9",
+        "rafael@15.15.255.9",
         "docker",
         "exec",
         "-i",
