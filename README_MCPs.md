@@ -4,47 +4,64 @@ Este projeto possui 8 MCPs (Model Context Protocol Servers) que funcionam como f
 
 ## 🚀 Quick Start
 
-### 1. Iniciar MCPs que precisam de Docker
+### 1. Iniciar MCPs
 ```bash
 docker-compose up -d
 ```
 
-**Nota:** Apenas 2 MCPs rodam via Docker:
-- `docker-admin` - Gerenciamento de containers
-- `api-database-tester` - Testes de API/DB (precisa ODBC Driver 18)
-
-Os outros 8 MCPs rodam via **Python local** automaticamente quando você usa os editores.
+**Configuração atual:** Todos os **10 MCPs em Docker** para acesso remoto via SSH (Windows → Linux).
 
 ### 2. Verificar Status
 ```bash
-# Ver containers Docker
 docker-compose ps
-
-# Deve mostrar apenas 2 containers:
-# - igo-docker-admin
-# - igo-api-database-tester
 ```
 
-### 3. Testar MCPs
-Abra seu editor e use:
+**Deve mostrar 10 containers:**
+- igo-excel-server
+- igo-agente-orchestrator
+- igo-memory-manager
+- igo-checklist-validator
+- igo-agente-insights
+- igo-agente-resumo
+- igo-docker-admin
+- igo-openai-gateway
+- igo-api-database-tester
+- igo-vuetify-uiux
+
+### 3. Configurar Acesso Remoto
+
+**Windows → Servidor Linux:**
+📖 Guia rápido: [QUICK_START_REMOTO.md](QUICK_START_REMOTO.md)
+
+```powershell
+# Renomear para usar config remota
+Rename-Item .mcp.json .mcp.local.json
+Copy-Item .mcp.remote-docker.json .mcp.json
+```
+
+### 4. Testar MCPs
 ```python
 docker-admin.health_check()
 ```
 
-## 🏗️ Arquitetura Híbrida
+## 🏗️ Arquitetura Flexível
 
-Este projeto usa **arquitetura híbrida** para otimizar performance:
+### 🌐 Modo Atual: Remoto (Windows → Linux)
+- **10 MCPs em Docker** - Todos acessíveis via SSH + docker exec
+- Configuração: `.mcp.remote-docker.json`
+- Latência: ~50-100ms
+- **Ideal para:** Acesso de Windows ao servidor Linux
 
-- **2 MCPs em Docker** - Apenas os que realmente precisam
-- **8 MCPs via Python** - Performance máxima, desenvolvimento ágil
+### 🏠 Modo Alternativo: Local (Dev no Servidor)
+- **8 MCPs via Python** - Execução direta
+- **2 MCPs em Docker** - Apenas os necessários
+- Performance: <1ms
+- **Ideal para:** Desenvolvimento direto no servidor Linux
 
-**Por quê?**
-- ⚡ Startup 4-6x mais rápido
-- 🚀 Latência 10-50x menor
-- 💾 75% menos memória
-- 💻 Hot reload automático
-
-📖 Leia mais: [DOCKER_vs_PYTHON.md](DOCKER_vs_PYTHON.md) | [MIGRACAO_DOCKER_PYTHON.md](MIGRACAO_DOCKER_PYTHON.md)
+📖 Leia mais:
+- [DOCKER_vs_PYTHON.md](DOCKER_vs_PYTHON.md) - Comparação detalhada
+- [SETUP_WINDOWS_REMOTO.md](SETUP_WINDOWS_REMOTO.md) - Setup Windows
+- [QUICK_START_REMOTO.md](QUICK_START_REMOTO.md) - Guia rápido
 
 ## 📚 Documentação por Editor
 

@@ -140,40 +140,52 @@ Performance máxima:
 - Chave SSH configurada
 - Acesso ao servidor 15.15.255.9
 
-### Setup Local
+### Setup Local (Desenvolvimento)
+
+**Nota:** Para desenvolvimento local no servidor, você pode rodar os MCPs via Python diretamente (mais rápido).
+Para acesso remoto de Windows, use todos via Docker (veja Setup Remoto).
 
 ```bash
 # 1. Clone o repositório
 git clone <repo-url>
 cd mcp-servers
 
-# 2. Inicie containers Docker
+# 2. Inicie containers Docker (TODOS os 10 MCPs)
 docker-compose up -d
 
 # 3. Verifique status
 docker-compose ps
-# Deve mostrar 2 containers: igo-docker-admin e igo-api-database-tester
+# Deve mostrar 10 containers: todos com status "Up"
 
 # 4. Configure seu editor
 # Veja o guia específico do seu editor
 ```
 
-### Setup Remoto
+### Setup Remoto (Windows → Servidor Linux)
 
-```bash
-# 1. Configure SSH
-ssh-copy-id rafael@15.15.255.9
+**Guia rápido:** [QUICK_START_REMOTO.md](QUICK_START_REMOTO.md) ⚡
 
-# 2. Teste conexão (sem senha)
-ssh rafael@15.15.255.9
+```powershell
+# No Windows:
 
-# 3. Use configuração remota
-# Renomeie .mcp.remote.json para .mcp.json
-# Ou aponte seu editor para .mcp.remote.json
+# 1. Configure SSH (sem senha)
+ssh-keygen -t ed25519
+type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh rafael@15.15.255.9 "cat >> ~/.ssh/authorized_keys"
 
-# 4. Leia o guia completo
-# SETUP_REMOTO.md
+# 2. Subir containers no servidor
+ssh rafael@15.15.255.9 "cd /home/rafael/mcp-servers && docker-compose up -d"
+
+# 3. Usar configuração remota (todos via Docker)
+cd C:\GIT-RAFAEL\mcp-servers
+Rename-Item .mcp.json .mcp.local.json
+Copy-Item .mcp.remote-docker.json .mcp.json
+
+# 4. Reload editor e testar
+# VSCode: Ctrl+Shift+P → "Reload Window"
+# Teste: docker-admin.health_check()
 ```
+
+**Guia completo:** [SETUP_WINDOWS_REMOTO.md](SETUP_WINDOWS_REMOTO.md)
 
 ### Configuração por Editor
 

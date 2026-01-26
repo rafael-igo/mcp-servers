@@ -1,0 +1,84 @@
+{
+  "mcpServers": {
+    "excel-server": {
+      "command": "python",
+      "args": [
+        "c:/GIT-RAFAEL/mcp-servers/excel-server/server.py"
+      ],
+      "env": {}
+    },
+    "agente-orchestrator": {
+      "command": "python",
+      "args": [
+        "c:/GIT-RAFAEL/mcp-servers/agente-orchestrator/server.py"
+      ],
+      "env": {}
+    },
+    "memory-manager": {
+      "command": "python",
+      "args": [
+        "c:/GIT-RAFAEL/mcp-servers/memory-manager/server.py"
+      ],
+      "env": {}
+    },
+    "checklist-validator": {
+      "command": "python",
+      "args": [
+        "c:/GIT-RAFAEL/mcp-servers/checklist-validator/server.py"
+      ],
+      "env": {}
+    },
+    "agente-insights": {
+      "command": "python",
+      "args": [
+        "c:/GIT-RAFAEL/mcp-servers/agente-insights/server.py"
+      ],
+      "env": {}
+    },
+    "agente-resumo": {
+      "command": "python",
+      "args": [
+        "c:/GIT-RAFAEL/mcp-servers/agente-resumo/server.py"
+      ],
+      "env": {}
+    },
+    "docker-admin": {
+      "command": "docker",
+      "args": [
+        "exec",
+        "-i",
+        "igo-docker-admin",
+        "python",
+        "server.py"
+      ],
+      "env": {},
+      "comment": "Precisa de Docker (gerencia containers)"
+    },
+    "igo-openai-gateway": {
+      "command": "python",
+      "args": [
+        "c:/GIT-RAFAEL/mcp-servers/igo-openai-gateway/server.py"
+      ],
+      "env": {}
+    },
+    "api-database-tester": {
+      "command": "docker",
+      "args": [
+        "exec",
+        "-i",
+        "igo-api-database-tester",
+        "python",
+        "server.py"
+      ],
+      "env": {},
+      "comment": "Precisa de Docker (ODBC Driver 18 Linux)"
+    },
+    "vuetify-uiux": {
+      "command": "python",
+      "args": [
+        "c:/GIT-RAFAEL/mcp-servers/vuetify-uiux/server.py"
+      ],
+      "env": {}
+    }
+  }
+}

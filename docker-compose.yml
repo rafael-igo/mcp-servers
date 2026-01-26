@@ -1,28 +1,135 @@
 # ============================================================
-# Docker Compose - APENAS MCPs que PRECISAM de Docker
+# Docker Compose - TODOS os 10 MCPs
 # ============================================================
-# Os demais MCPs rodam via Python local (ver .mcp.json)
+# Para acesso remoto via SSH de Windows → Linux
+# Windows não consegue acessar Python diretamente via SSH
+# Por isso todos os MCPs rodam em containers Docker
 #
-# MCPs em Docker:
-#   - docker-admin: Precisa de acesso ao Docker socket
-#   - api-database-tester: Precisa de ODBC Driver 18 (Linux)
-#
-# MCPs via Python local (não precisam de Docker):
-#   - excel-server
-#   - agente-orchestrator
-#   - memory-manager
-#   - checklist-validator
-#   - agente-insights
-#   - agente-resumo
-#   - igo-openai-gateway
-#   - vuetify-uiux
+# Para uso LOCAL (desenvolvimento no servidor Linux):
+#   - Pode usar apenas Python local (mais rápido)
+#   - Veja: .mcp.json (aponta para python3 local)
 # ============================================================
 
 services:
   # ================================
+  # Excel Server MCP
+  # ================================
+  excel-server:
+    build: ./excel-server
+    container_name: igo-excel-server
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import openpyxl; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # Agente Orchestrator MCP
+  # ================================
+  agente-orchestrator:
+    build: ./agente-orchestrator
+    container_name: igo-agente-orchestrator
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # Memory Manager MCP
+  # ================================
+  memory-manager:
+    build: ./memory-manager
+    container_name: igo-memory-manager
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../../:/project  # Read-write para atualizar memória
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import pathlib; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # Checklist Validator MCP
+  # ================================
+  checklist-validator:
+    build: ./checklist-validator
+    container_name: igo-checklist-validator
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../../:/project  # Read-write para atualizar checklists
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # Agente Insights MCP
+  # ================================
+  agente-insights:
+    build: ./agente-insights
+    container_name: igo-agente-insights
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./docs:/app/docs  # Persistência de insights
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # Agente Resumo MCP
+  # ================================
+  agente-resumo:
+    build: ./agente-resumo
+    container_name: igo-agente-resumo
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./docs:/app/docs  # Persistência de dados
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
   # Docker Admin MCP
   # ================================
-  # Precisa de Docker para gerenciar containers
   docker-admin:
     build: ./docker-admin
     container_name: igo-docker-admin
@@ -43,9 +150,29 @@ services:
       retries: 3
 
   # ================================
+  # OpenAI Gateway MCP
+  # ================================
+  igo-openai-gateway:
+    build: ./igo-openai-gateway
+    container_name: igo-openai-gateway
+    stdin_open: true
+    tty: true
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    volumes:
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import openai; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
   # API & Database Tester MCP
   # ================================
-  # Precisa de Docker para ODBC Driver 18 (Linux)
   api-database-tester:
     build: ./api-database-tester
     container_name: igo-api-database-tester
@@ -60,6 +187,25 @@ services:
       - DEFAULT_TIMEOUT=30
     healthcheck:
       test: ["CMD", "python", "-c", "import pyodbc; print(pyodbc.drivers())"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # Vuetify UI/UX MCP
+  # ================================
+  vuetify-uiux:
+    build: ./vuetify-uiux
+    container_name: igo-vuetify-uiux
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../../:/project:ro  # Read-only acesso ao projeto
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "print('OK')"]
       interval: 30s
       timeout: 10s
       retries: 3

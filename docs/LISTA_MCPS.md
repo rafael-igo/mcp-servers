@@ -42,18 +42,19 @@ Este projeto possui **11 MCPs** (Model Context Protocol servers) que fornecem fe
 
 ---
 
-### 2. agente-orchestrator 🟢 LOCAL
+### 2. agente-orchestrator 🟢 LOCAL ⭐ FASE 2: IA DECISION MAKING
 **Modo:** Python local (Windows)
 **Diretório:** `mcp-servers/agente-orchestrator/`
 **Comando:** `python c:/GIT-RAFAEL/mcp-servers/agente-orchestrator/server.py`
 
-**Descrição:** Orquestrador de agentes especializados do projeto.
+**Descrição:** Orquestrador de agentes especializados do projeto com decisão inteligente via IA.
 
-**Ferramentas:**
+**Ferramentas (5):**
 - `list_agents()` - Lista todos os agentes e MCPs disponíveis
 - `invoke_agent()` - Invoca um agente específico com uma tarefa
 - `get_agent_docs()` - Retorna documentação completa de um agente
 - `update_agent_memory()` - Atualiza memória do sistema de agentes
+- `ask_ai_to_decide(user_request, project?, branch?)` - 🆕 **Usa IA (GPT-5.2) para decidir qual agente usar**
 
 **MCPs Gerenciados:**
 - agente-insights
@@ -282,16 +283,16 @@ docs/resumo/
 
 ---
 
-### 8. igo-openai-gateway 🟢 LOCAL
+### 8. igo-openai-gateway 🟢 LOCAL ⭐ FASE 2: IA DECISION MAKING
 **Modo:** Python local (Windows)
 **Diretório:** `mcp-servers/igo-openai-gateway/`
 **Comando:** `python c:/GIT-RAFAEL/mcp-servers/igo-openai-gateway/server.py`
 
-**Descrição:** Gateway para executar tarefas via OpenAI GPT-5.2 Responses API.
+**Descrição:** Gateway para executar tarefas via OpenAI GPT-5.2 Responses API com decisão inteligente de agentes.
 
 **Modelo:** gpt-5.2-2025-12-11
 
-**Ferramentas (7):**
+**Ferramentas (8):**
 
 **Básicas:**
 - `run_prompt(prompt, input, model?, reasoning?, verbosity?, max_tokens?)` - Executa prompt direto
@@ -303,6 +304,7 @@ docs/resumo/
 - `run_code_analysis(code, analysis_type, language?, reasoning?)` - Análise de código
 - `run_architectural_review(description, context?, reasoning?)` - Revisão arquitetural
 - `generate_tests(code, test_type, framework?, reasoning?)` - Geração de testes
+- `decide_agent(user_request, available_agents, project_context?, reasoning?)` - 🆕 **Decide qual agente usar com GPT-5.2**
 
 **Parâmetros Avançados:**
 - `reasoning_effort`: none, low, medium, high, xhigh
@@ -494,12 +496,14 @@ memory-manager.save_context(
 - [x] Contexto híbrido (global + override)
 - [x] Ferramentas de comparação de branches
 
-### Fase 2 - Orchestrator + Gateway Integration ⚠️ EM PROGRESSO
-- [ ] Integração Orchestrator com igo-openai-gateway
-- [ ] Gateway como "cérebro" para decisões inteligentes
-- [ ] `ask_ai_to_decide` no orchestrator
-- [ ] `decide_agent` no gateway
-- [ ] GPT-5.2 reasoning para escolher agentes
+### Fase 2 - Orchestrator + Gateway Integration ✅ COMPLETO
+- [x] Integração Orchestrator com igo-openai-gateway
+- [x] Gateway como "cérebro" para decisões inteligentes
+- [x] `ask_ai_to_decide` no orchestrator
+- [x] `decide_agent` no gateway
+- [x] GPT-5.2 reasoning para escolher agentes
+- [x] Compatibilidade Windows/Docker automática
+- [x] Documentação completa (FASE-2-IA-DECISION-MAKING.md)
 
 ### Fase 3 - Analytics & Cross-Project 📋 PLANEJADO
 - [ ] Comparação cross-project
