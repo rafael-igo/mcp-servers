@@ -1,93 +1,28 @@
+# ============================================================
+# Docker Compose - APENAS MCPs que PRECISAM de Docker
+# ============================================================
+# Os demais MCPs rodam via Python local (ver .mcp.json)
+#
+# MCPs em Docker:
+#   - docker-admin: Precisa de acesso ao Docker socket
+#   - api-database-tester: Precisa de ODBC Driver 18 (Linux)
+#
+# MCPs via Python local (não precisam de Docker):
+#   - excel-server
+#   - agente-orchestrator
+#   - memory-manager
+#   - checklist-validator
+#   - agente-insights
+#   - agente-resumo
+#   - igo-openai-gateway
+#   - vuetify-uiux
+# ============================================================
+
 services:
-  # ================================
-  # Excel Server MCP
-  # ================================
-  excel-server:
-    build: ./excel-server
-    container_name: igo-excel-server
-    stdin_open: true
-    tty: true
-    volumes:
-      - ../../:/project:ro  # Read-only acesso ao projeto
-    restart: unless-stopped
-    networks:
-      - mcp-network
-
-  # ================================
-  # Agente Orchestrator MCP
-  # ================================
-  agente-orchestrator:
-    build: ./agente-orchestrator
-    container_name: igo-agente-orchestrator
-    stdin_open: true
-    tty: true
-    volumes:
-      - ../../:/project:ro  # Read-only acesso ao projeto
-    restart: unless-stopped
-    networks:
-      - mcp-network
-
-  # ================================
-  # Memory Manager MCP
-  # ================================
-  memory-manager:
-    build: ./memory-manager
-    container_name: igo-memory-manager
-    stdin_open: true
-    tty: true
-    volumes:
-      - ../../:/project  # Read-write para atualizar memória
-    restart: unless-stopped
-    networks:
-      - mcp-network
-
-  # ================================
-  # Checklist Validator MCP
-  # ================================
-  checklist-validator:
-    build: ./checklist-validator
-    container_name: igo-checklist-validator
-    stdin_open: true
-    tty: true
-    volumes:
-      - ../../:/project  # Read-write para atualizar checklists
-    restart: unless-stopped
-    networks:
-      - mcp-network
-
-  # ================================
-  # Agente Insights MCP
-  # ================================
-  agente-insights:
-    build: ./agente-insights
-    container_name: igo-agente-insights
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./docs:/app/docs  # Persistência de insights
-      - ../../:/project:ro  # Read-only acesso ao projeto
-    restart: unless-stopped
-    networks:
-      - mcp-network
-
-  # ================================
-  # Agente Resumo MCP
-  # ================================
-  agente-resumo:
-    build: ./agente-resumo
-    container_name: igo-agente-resumo
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./docs:/app/docs  # Persistência de dados
-      - ../../:/project:ro  # Read-only acesso ao projeto
-    restart: unless-stopped
-    networks:
-      - mcp-network
-
   # ================================
   # Docker Admin MCP
   # ================================
+  # Precisa de Docker para gerenciar containers
   docker-admin:
     build: ./docker-admin
     container_name: igo-docker-admin
@@ -101,26 +36,16 @@ services:
     restart: unless-stopped
     networks:
       - mcp-network
-
-  # ================================
-  # OpenAI Gateway MCP
-  # ================================
-  igo-openai-gateway:
-    build: ./igo-openai-gateway
-    container_name: igo-openai-gateway
-    stdin_open: true
-    tty: true
-    environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-    volumes:
-      - ../../:/project:ro  # Read-only acesso ao projeto
-    restart: unless-stopped
-    networks:
-      - mcp-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import docker; docker.from_env().ping()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # ================================
   # API & Database Tester MCP
   # ================================
+  # Precisa de Docker para ODBC Driver 18 (Linux)
   api-database-tester:
     build: ./api-database-tester
     container_name: igo-api-database-tester
@@ -133,6 +58,11 @@ services:
       - mcp-network
     environment:
       - DEFAULT_TIMEOUT=30
+    healthcheck:
+      test: ["CMD", "python", "-c", "import pyodbc; print(pyodbc.drivers())"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   mcp-network:

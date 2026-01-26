@@ -1,0 +1,23 @@
+{
+  "project_name": "Novo Projeto",
+  "phase": "Planejamento",
+  "overall_progress": 100,
+  "modules": {
+    "Sistema Multi-Projeto": {
+      "progress": 100,
+      "status": "completed",
+      "features_total": 0,
+      "features_done": 0,
+      "history": [
+        {
+          "timestamp": "2026-01-26T01:26:51.948876",
+          "progress_change": "0% → 100%",
+          "notes": "Fase 1 implementada"
+        }
+      ]
+    }
+  },
+  "next_steps": [],
+  "blockers": [],
+  "last_updated": "2026-01-26T01:26:51.948876"
+}

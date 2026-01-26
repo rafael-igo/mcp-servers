@@ -19,9 +19,18 @@ from openai import OpenAI
 
 mcp = FastMCP("igo-openai-gateway")
 
-PROJECT_ROOT = Path("/project")
-MCP_SERVERS_DIR = PROJECT_ROOT / "GIT-RAFAEL" / "mcp-servers"
-DOCS_DIR = MCP_SERVERS_DIR / "docs"
+# Detectar se está rodando em Docker ou Windows local
+import sys
+if sys.platform == "win32":
+    # Windows local
+    PROJECT_ROOT = Path("c:/GIT-RAFAEL/mcp-servers")
+    DOCS_DIR = PROJECT_ROOT / "docs"
+else:
+    # Docker (Linux)
+    PROJECT_ROOT = Path("/project")
+    MCP_SERVERS_DIR = PROJECT_ROOT / "GIT-RAFAEL" / "mcp-servers"
+    DOCS_DIR = MCP_SERVERS_DIR / "docs"
+
 AGENTES_DIR = DOCS_DIR / "agentes"
 MEMORIA_DIR = DOCS_DIR / "memoria"
 
@@ -450,6 +459,112 @@ Inclua:
             reasoning_effort=reasoning_effort,
             verbosity="high",
         )
+    except Exception as exc:
+        return json.dumps(
+            {"success": False, "error": str(exc)},
+            ensure_ascii=False,
+            indent=2,
+        )
+
+
+@mcp.tool()
+def decide_agent(
+    user_request: str,
+    available_agents: str,
+    project_context: Optional[str] = None,
+    reasoning_effort: str = "high",
+) -> str:
+    """
+    Usa GPT-5.2 com reasoning para decidir qual(is) agente(s) usar.
+
+    Esta é a função "cérebro" do orchestrator - analisa a requisição do usuário
+    e recomenda o(s) agente(s) mais adequado(s) para a tarefa.
+
+    Args:
+        user_request: Requisição do usuário (pode ser ambígua)
+        available_agents: JSON string com lista de agentes disponíveis
+        project_context: Contexto atual do projeto (opcional)
+        reasoning_effort: none, low, medium, high, xhigh (default: high)
+
+    Returns:
+        JSON com agente(s) recomendado(s) e explicação detalhada
+    """
+    try:
+        decision_prompt = """Você é um especialista em arquitetura de sistemas de agentes de IA.
+
+Sua tarefa é analisar a requisição do usuário e decidir qual(is) agente(s) especializado(s)
+deve(m) ser utilizado(s) para resolver o problema.
+
+REGRAS DE DECISÃO:
+1. Analise a natureza da tarefa (desenvolvimento, negócio, módulo específico)
+2. Considere se a tarefa requer múltiplos agentes trabalhando em sequência
+3. Prefira agentes especializados para tarefas focadas
+4. Use agentes de desenvolvimento para tarefas técnicas amplas
+5. Use agentes de módulo para features/bugs específicos de um módulo
+6. Use agentes de negócio para análises de KPI, comerciais ou estratégicas
+
+FORMATO DE RESPOSTA:
+Retorne um JSON estruturado com:
+{
+  "recommended_agents": [
+    {
+      "agent_name": "nome-do-agente",
+      "priority": "primary|secondary",
+      "reason": "explicação detalhada do por que este agente"
+    }
+  ],
+  "reasoning": "análise completa da decisão",
+  "execution_plan": "como os agentes devem trabalhar juntos (se múltiplos)",
+  "confidence": "high|medium|low"
+}"""
+
+        input_text = f"""# Requisição do Usuário
+{user_request}
+
+# Agentes Disponíveis
+{available_agents}
+
+# Contexto do Projeto
+{project_context or "Não disponível"}
+
+Analise e decida qual(is) agente(s) usar."""
+
+        result = run_prompt(
+            prompt=decision_prompt,
+            input_text=input_text,
+            reasoning_effort=reasoning_effort,
+            verbosity="high",
+            max_output_tokens=2000,
+        )
+
+        # Parse the result to ensure it's valid JSON
+        result_data = json.loads(result)
+        if result_data.get("success"):
+            # Try to parse the text as JSON to validate format
+            text_content = result_data.get("text", "")
+            try:
+                # Check if GPT returned valid JSON
+                decision_json = json.loads(text_content)
+                return json.dumps({
+                    "success": True,
+                    "decision": decision_json,
+                    "model": "gpt-5.2-2025-12-11",
+                    "reasoning_effort": reasoning_effort
+                }, ensure_ascii=False, indent=2)
+            except json.JSONDecodeError:
+                # GPT returned text explanation, wrap it
+                return json.dumps({
+                    "success": True,
+                    "decision": {
+                        "text_response": text_content,
+                        "note": "GPT retornou explicação textual ao invés de JSON estruturado"
+                    },
+                    "model": "gpt-5.2-2025-12-11",
+                    "reasoning_effort": reasoning_effort
+                }, ensure_ascii=False, indent=2)
+        else:
+            return result
+
     except Exception as exc:
         return json.dumps(
             {"success": False, "error": str(exc)},

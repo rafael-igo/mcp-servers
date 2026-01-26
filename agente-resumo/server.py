@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
-Agente Resumo MCP
-=================
+Agente Resumo MCP - Multi-Project/Branch Support
+=================================================
 Status do projeto, progresso, relatórios e métricas.
+
+Suporta múltiplos projetos e branches com contexto híbrido.
 """
 
 import sys
@@ -17,277 +19,234 @@ mcp = FastMCP("agente-resumo")
 # Caminhos
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 DOCS_DIR = Path(__file__).parent.parent / "docs"
-MEMORIA_DIR = DOCS_DIR / "memoria"
-CONTEXT_FILE = MEMORIA_DIR / "contexto-atual.json"
-PROGRESS_FILE = MEMORIA_DIR / "progresso.json"
+RESUMO_BASE_DIR = DOCS_DIR / "resumo"
+
+# Contexto global (híbrido)
+_GLOBAL_CONTEXT = {
+    "project": "default",
+    "branch": "main"
+}
 
 
-def _ensure_dirs():
-    """Garante que diretórios existam."""
-    DOCS_DIR.mkdir(exist_ok=True)
-    MEMORIA_DIR.mkdir(exist_ok=True)
+def _get_project_dir(project: Optional[str] = None, branch: Optional[str] = None) -> Path:
+    """Retorna diretório do projeto/branch usando contexto híbrido."""
+    proj = project or _GLOBAL_CONTEXT["project"]
+    brch = branch or _GLOBAL_CONTEXT["branch"]
+
+    project_dir = RESUMO_BASE_DIR / proj / brch
+    project_dir.mkdir(parents=True, exist_ok=True)
+
+    return project_dir
 
 
-def _load_context() -> Dict:
-    """Carrega contexto atual do projeto."""
-    _ensure_dirs()
-    if CONTEXT_FILE.exists():
-        with open(CONTEXT_FILE, 'r', encoding='utf-8') as f:
+def _load_progress(project: Optional[str] = None, branch: Optional[str] = None) -> Dict:
+    """Carrega dados de progresso."""
+    project_dir = _get_project_dir(project, branch)
+    progress_file = project_dir / "progresso.json"
+
+    if progress_file.exists():
+        with open(progress_file, 'r', encoding='utf-8') as f:
             return json.load(f)
+
     return {
-        "project_name": "I GO Experience",
-        "phase": "MVP Development",
-        "overall_progress": 80,
-        "last_updated": datetime.now().isoformat(),
-        "modules": {}
-    }
-
-
-def _save_context(context: Dict):
-    """Salva contexto do projeto."""
-    _ensure_dirs()
-    context['last_updated'] = datetime.now().isoformat()
-    with open(CONTEXT_FILE, 'w', encoding='utf-8') as f:
-        json.dump(context, f, indent=2, ensure_ascii=False)
-
-
-def _load_progress() -> Dict:
-    """Carrega dados de progresso detalhado."""
-    _ensure_dirs()
-    if PROGRESS_FILE.exists():
-        with open(PROGRESS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {
-        "modules": {
-            "Transfer": {
-                "progress": 90,
-                "status": "active",
-                "features_total": 20,
-                "features_done": 18,
-                "pending": ["Otimizações de performance", "Testes com datasets grandes"]
-            },
-            "Rooming List": {
-                "progress": 100,
-                "status": "completed",
-                "features_total": 15,
-                "features_done": 15,
-                "pending": []
-            },
-            "Backend API": {
-                "progress": 100,
-                "status": "completed",
-                "features_total": 25,
-                "features_done": 25,
-                "pending": []
-            },
-            "Check-in": {
-                "progress": 0,
-                "status": "planned",
-                "features_total": 12,
-                "features_done": 0,
-                "pending": ["Interface de check-in", "Web NFC API", "Dashboard de presença"]
-            }
-        },
-        "next_steps": [
-            {"task": "Conectar Frontend com Backend", "priority": "critical", "estimate": "3-5 dias"},
-            {"task": "Implementar Check-in frontend", "priority": "high", "estimate": "1-2 semanas"},
-            {"task": "Real-time com WebSockets", "priority": "medium", "estimate": "1 semana"}
-        ],
+        "project_name": "Novo Projeto",
+        "phase": "Planejamento",
+        "overall_progress": 0,
+        "modules": {},
+        "next_steps": [],
         "blockers": []
     }
 
 
+def _save_progress(data: Dict, project: Optional[str] = None, branch: Optional[str] = None):
+    """Salva dados de progresso."""
+    project_dir = _get_project_dir(project, branch)
+    progress_file = project_dir / "progresso.json"
+
+    data['last_updated'] = datetime.now().isoformat()
+    with open(progress_file, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+
 @mcp.tool()
-def get_project_status(include_details: bool = False) -> str:
-    """
-    Retorna status geral do projeto.
-
-    Args:
-        include_details: Incluir detalhes de cada módulo
-
-    Returns:
-        JSON com status do projeto
-    """
+def set_project_context(project: str, branch: str = "main") -> str:
+    """Define o contexto global do projeto/branch."""
     try:
-        context = _load_context()
-        progress = _load_progress()
-
-        status = {
-            "project": context.get("project_name", "I GO Experience"),
-            "phase": context.get("phase", "MVP Development"),
-            "overall_progress": context.get("overall_progress", 80),
-            "last_updated": context.get("last_updated"),
-            "modules_summary": {}
-        }
-
-        # Resumo dos módulos
-        for name, module in progress['modules'].items():
-            status['modules_summary'][name] = {
-                "progress": module['progress'],
-                "status": module['status']
-            }
-
-        if include_details:
-            status['modules_detailed'] = progress['modules']
-            status['next_steps'] = progress['next_steps']
-            status['blockers'] = progress['blockers']
+        _GLOBAL_CONTEXT["project"] = project
+        _GLOBAL_CONTEXT["branch"] = branch
+        _get_project_dir(project, branch)
 
         return json.dumps({
             "success": True,
-            "status": status
-        }, indent=2, ensure_ascii=False)
-
+            "message": f"Contexto global configurado: {project}/{branch}",
+            "context": {"project": project, "branch": branch}
+        }, indent=2)
     except Exception as e:
-        return json.dumps({
-            "success": False,
-            "error": str(e)
-        })
+        return json.dumps({"success": False, "error": str(e)})
 
 
 @mcp.tool()
-def get_module_status(module_name: str) -> str:
-    """
-    Retorna status detalhado de um módulo específico.
+def get_project_context() -> str:
+    """Retorna o contexto global atual."""
+    return json.dumps({"success": True, "context": _GLOBAL_CONTEXT}, indent=2)
 
-    Args:
-        module_name: Nome do módulo (Transfer, Rooming List, Backend API, Check-in)
 
-    Returns:
-        JSON com status do módulo
-    """
+@mcp.tool()
+def get_project_status(
+    include_details: bool = False,
+    project: Optional[str] = None,
+    branch: Optional[str] = None
+) -> str:
+    """Retorna status geral do projeto."""
     try:
-        progress = _load_progress()
+        proj = project or _GLOBAL_CONTEXT["project"]
+        brch = branch or _GLOBAL_CONTEXT["branch"]
 
-        module = progress['modules'].get(module_name)
+        progress = _load_progress(project, branch)
+
+        status = {
+            "project": progress.get("project_name", proj),
+            "branch": brch,
+            "phase": progress.get("phase", "Planejamento"),
+            "overall_progress": progress.get("overall_progress", 0),
+            "last_updated": progress.get("last_updated"),
+            "modules_summary": {}
+        }
+
+        for name, module in progress.get('modules', {}).items():
+            status['modules_summary'][name] = {
+                "progress": module.get('progress', 0),
+                "status": module.get('status', 'planned')
+            }
+
+        if include_details:
+            status['modules_detailed'] = progress.get('modules', {})
+            status['next_steps'] = progress.get('next_steps', [])
+            status['blockers'] = progress.get('blockers', [])
+
+        return json.dumps({"success": True, "status": status}, indent=2, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"success": False, "error": str(e)})
+
+
+@mcp.tool()
+def get_module_status(
+    module_name: str,
+    project: Optional[str] = None,
+    branch: Optional[str] = None
+) -> str:
+    """Retorna status detalhado de um módulo específico."""
+    try:
+        proj = project or _GLOBAL_CONTEXT["project"]
+        brch = branch or _GLOBAL_CONTEXT["branch"]
+
+        progress = _load_progress(project, branch)
+        module = progress.get('modules', {}).get(module_name)
+
         if not module:
             return json.dumps({
                 "success": False,
-                "error": f"Módulo '{module_name}' não encontrado"
+                "error": f"Módulo '{module_name}' não encontrado em {proj}/{brch}"
             })
 
         return json.dumps({
             "success": True,
             "module": module_name,
+            "project": proj,
+            "branch": brch,
             "details": module
         }, indent=2, ensure_ascii=False)
-
     except Exception as e:
-        return json.dumps({
-            "success": False,
-            "error": str(e)
-        })
+        return json.dumps({"success": False, "error": str(e)})
 
 
 @mcp.tool()
 def update_module_progress(
     module_name: str,
-    progress: int,
+    progress_pct: int,
     status: Optional[str] = None,
-    notes: Optional[str] = None
+    notes: Optional[str] = None,
+    project: Optional[str] = None,
+    branch: Optional[str] = None
 ) -> str:
-    """
-    Atualiza progresso de um módulo.
-
-    Args:
-        module_name: Nome do módulo
-        progress: Progresso em % (0-100)
-        status: Status (active, completed, blocked, planned)
-        notes: Notas sobre a atualização
-
-    Returns:
-        JSON confirmando atualização
-    """
+    """Atualiza progresso de um módulo."""
     try:
-        data = _load_progress()
+        proj = project or _GLOBAL_CONTEXT["project"]
+        brch = branch or _GLOBAL_CONTEXT["branch"]
+
+        data = _load_progress(project, branch)
+
+        if 'modules' not in data:
+            data['modules'] = {}
 
         if module_name not in data['modules']:
-            return json.dumps({
-                "success": False,
-                "error": f"Módulo '{module_name}' não encontrado"
-            })
+            data['modules'][module_name] = {
+                "progress": 0,
+                "status": "planned",
+                "features_total": 0,
+                "features_done": 0,
+                "history": []
+            }
 
         module = data['modules'][module_name]
-        old_progress = module['progress']
+        old_progress = module.get('progress', 0)
 
-        module['progress'] = max(0, min(100, progress))
+        module['progress'] = max(0, min(100, progress_pct))
         if status:
             module['status'] = status
 
-        # Histórico de atualizações
         if 'history' not in module:
             module['history'] = []
 
         module['history'].append({
             "timestamp": datetime.now().isoformat(),
-            "progress_change": f"{old_progress}% → {progress}%",
+            "progress_change": f"{old_progress}% → {progress_pct}%",
             "notes": notes or "Atualização de progresso"
         })
 
-        # Salvar
-        with open(PROGRESS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
+        # Recalcular progresso geral
+        total_progress = sum(m['progress'] for m in data['modules'].values())
+        module_count = len(data['modules'])
+        data['overall_progress'] = int(total_progress / module_count) if module_count > 0 else 0
 
-        # Atualizar contexto geral
-        _update_overall_progress()
+        _save_progress(data, project, branch)
 
         return json.dumps({
             "success": True,
             "module": module_name,
             "old_progress": old_progress,
-            "new_progress": progress,
-            "message": f"✅ {module_name}: {old_progress}% → {progress}%"
+            "new_progress": progress_pct,
+            "project": proj,
+            "branch": brch,
+            "message": f"✅ {module_name}: {old_progress}% → {progress_pct}%"
         }, indent=2)
-
     except Exception as e:
-        return json.dumps({
-            "success": False,
-            "error": str(e)
-        })
-
-
-def _update_overall_progress():
-    """Recalcula progresso geral do projeto."""
-    progress = _load_progress()
-    context = _load_context()
-
-    # Média ponderada dos módulos
-    total = 0
-    count = 0
-    for module in progress['modules'].values():
-        total += module['progress']
-        count += 1
-
-    if count > 0:
-        context['overall_progress'] = int(total / count)
-        _save_context(context)
+        return json.dumps({"success": False, "error": str(e)})
 
 
 @mcp.tool()
-def get_next_steps(limit: int = 10) -> str:
-    """
-    Lista próximos passos priorizados.
-
-    Args:
-        limit: Número máximo de itens
-
-    Returns:
-        JSON com próximos passos
-    """
+def get_next_steps(
+    limit: int = 10,
+    project: Optional[str] = None,
+    branch: Optional[str] = None
+) -> str:
+    """Lista próximos passos priorizados."""
     try:
-        progress = _load_progress()
+        proj = project or _GLOBAL_CONTEXT["project"]
+        brch = branch or _GLOBAL_CONTEXT["branch"]
+
+        progress = _load_progress(project, branch)
         next_steps = progress.get('next_steps', [])[:limit]
 
         return json.dumps({
             "success": True,
             "count": len(next_steps),
-            "next_steps": next_steps
+            "next_steps": next_steps,
+            "project": proj,
+            "branch": brch
         }, indent=2, ensure_ascii=False)
-
     except Exception as e:
-        return json.dumps({
-            "success": False,
-            "error": str(e)
-        })
+        return json.dumps({"success": False, "error": str(e)})
 
 
 @mcp.tool()
@@ -295,22 +254,16 @@ def add_next_step(
     task: str,
     priority: str = "medium",
     estimate: Optional[str] = None,
-    module: Optional[str] = None
+    module: Optional[str] = None,
+    project: Optional[str] = None,
+    branch: Optional[str] = None
 ) -> str:
-    """
-    Adiciona um novo próximo passo.
-
-    Args:
-        task: Descrição da tarefa
-        priority: Prioridade (critical, high, medium, low)
-        estimate: Estimativa de tempo
-        module: Módulo relacionado
-
-    Returns:
-        JSON confirmando adição
-    """
+    """Adiciona um novo próximo passo."""
     try:
-        progress = _load_progress()
+        proj = project or _GLOBAL_CONTEXT["project"]
+        brch = branch or _GLOBAL_CONTEXT["branch"]
+
+        progress = _load_progress(project, branch)
 
         step = {
             "task": task,
@@ -324,146 +277,88 @@ def add_next_step(
             progress['next_steps'] = []
 
         progress['next_steps'].append(step)
-
-        # Salvar
-        with open(PROGRESS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(progress, f, indent=2, ensure_ascii=False)
+        _save_progress(progress, project, branch)
 
         return json.dumps({
             "success": True,
             "step": step,
+            "project": proj,
+            "branch": brch,
             "message": f"✅ Próximo passo adicionado: {task}"
         }, indent=2)
-
     except Exception as e:
-        return json.dumps({
-            "success": False,
-            "error": str(e)
-        })
+        return json.dumps({"success": False, "error": str(e)})
 
 
 @mcp.tool()
 def generate_report(
     report_type: str = "executive",
-    audience: str = "team"
+    audience: str = "team",
+    project: Optional[str] = None,
+    branch: Optional[str] = None
 ) -> str:
-    """
-    Gera relatório formatado do projeto.
-
-    Args:
-        report_type: Tipo de relatório
-          - executive: Resumo executivo
-          - technical: Detalhes técnicos
-          - onboarding: Para novos membros
-          - stakeholder: Para stakeholders
-        audience: Público-alvo (team, management, client)
-
-    Returns:
-        JSON com relatório formatado
-    """
+    """Gera relatório formatado do projeto."""
     try:
-        context = _load_context()
-        progress = _load_progress()
+        proj = project or _GLOBAL_CONTEXT["project"]
+        brch = branch or _GLOBAL_CONTEXT["branch"]
+
+        progress = _load_progress(project, branch)
 
         report = {
-            "title": f"Relatório {report_type.title()} - {context['project_name']}",
+            "title": f"Relatório {report_type.title()} - {progress.get('project_name', proj)}",
             "generated_at": datetime.now().isoformat(),
+            "project": proj,
+            "branch": brch,
             "audience": audience,
             "content": {}
         }
 
+        modules = progress.get('modules', {})
+        next_steps = progress.get('next_steps', [])
+
         if report_type == "executive":
             report['content'] = {
-                "summary": f"Projeto em fase {context['phase']}",
-                "progress": f"{context['overall_progress']}% completo",
-                "modules": {
-                    name: f"{mod['progress']}% - {mod['status']}"
-                    for name, mod in progress['modules'].items()
-                },
-                "next_milestone": progress['next_steps'][0]['task'] if progress['next_steps'] else "N/A",
+                "summary": f"Projeto em fase {progress.get('phase', 'N/A')}",
+                "progress": f"{progress.get('overall_progress', 0)}% completo",
+                "modules": {name: f"{mod.get('progress', 0)}% - {mod.get('status', 'planned')}" for name, mod in modules.items()},
+                "next_milestone": next_steps[0]['task'] if next_steps else "N/A",
                 "blockers_count": len(progress.get('blockers', []))
             }
-
         elif report_type == "technical":
             report['content'] = {
-                "phase": context['phase'],
-                "overall_progress": context['overall_progress'],
-                "modules_detailed": progress['modules'],
-                "next_steps": progress['next_steps'],
+                "phase": progress.get('phase', 'N/A'),
+                "overall_progress": progress.get('overall_progress', 0),
+                "modules_detailed": modules,
+                "next_steps": next_steps,
                 "blockers": progress.get('blockers', []),
-                "last_updated": context['last_updated']
+                "last_updated": progress.get('last_updated')
             }
 
-        elif report_type == "onboarding":
-            report['content'] = {
-                "welcome": f"Bem-vindo ao projeto {context['project_name']}!",
-                "current_phase": context['phase'],
-                "what_is": "Sistema de gestão de eventos e viagens de incentivo internacionais",
-                "modules": list(progress['modules'].keys()),
-                "how_to_start": [
-                    "1. Entender arquitetura geral",
-                    "2. Escolher módulo para trabalhar",
-                    "3. Consultar próximos passos",
-                    "4. Usar agentes especialistas"
-                ],
-                "next_priorities": progress['next_steps'][:3]
-            }
-
-        elif report_type == "stakeholder":
-            completed = sum(1 for m in progress['modules'].values() if m['status'] == 'completed')
-            total = len(progress['modules'])
-
-            report['content'] = {
-                "project": context['project_name'],
-                "status": f"{context['overall_progress']}% completo",
-                "modules_completed": f"{completed}/{total} módulos",
-                "current_focus": progress['next_steps'][0]['task'] if progress['next_steps'] else "N/A",
-                "estimated_completion": "4-6 semanas (MVP completo)",
-                "blockers": "Nenhum crítico" if not progress.get('blockers') else f"{len(progress['blockers'])} bloqueadores"
-            }
-
-        return json.dumps({
-            "success": True,
-            "report": report
-        }, indent=2, ensure_ascii=False)
-
+        return json.dumps({"success": True, "report": report}, indent=2, ensure_ascii=False)
     except Exception as e:
-        return json.dumps({
-            "success": False,
-            "error": str(e)
-        })
+        return json.dumps({"success": False, "error": str(e)})
 
 
 @mcp.tool()
-def get_metrics() -> str:
-    """
-    Retorna métricas e estatísticas do projeto.
-
-    Returns:
-        JSON com métricas
-    """
+def get_metrics(
+    project: Optional[str] = None,
+    branch: Optional[str] = None
+) -> str:
+    """Retorna métricas e estatísticas do projeto."""
     try:
-        context = _load_context()
-        progress = _load_progress()
+        proj = project or _GLOBAL_CONTEXT["project"]
+        brch = branch or _GLOBAL_CONTEXT["branch"]
 
-        # Calcular métricas
-        modules = progress['modules']
-        total_features = sum(m['features_total'] for m in modules.values())
-        done_features = sum(m['features_done'] for m in modules.values())
+        progress = _load_progress(project, branch)
+        modules = progress.get('modules', {})
 
         metrics = {
-            "overall_progress": context['overall_progress'],
+            "overall_progress": progress.get('overall_progress', 0),
             "modules": {
                 "total": len(modules),
-                "completed": sum(1 for m in modules.values() if m['status'] == 'completed'),
-                "active": sum(1 for m in modules.values() if m['status'] == 'active'),
-                "planned": sum(1 for m in modules.values() if m['status'] == 'planned')
-            },
-            "features": {
-                "total": total_features,
-                "completed": done_features,
-                "remaining": total_features - done_features,
-                "completion_rate": int((done_features / total_features * 100)) if total_features > 0 else 0
+                "completed": sum(1 for m in modules.values() if m.get('status') == 'completed'),
+                "active": sum(1 for m in modules.values() if m.get('status') == 'active'),
+                "planned": sum(1 for m in modules.values() if m.get('status') == 'planned')
             },
             "next_steps": {
                 "total": len(progress.get('next_steps', [])),
@@ -471,19 +366,58 @@ def get_metrics() -> str:
                 "high": sum(1 for s in progress.get('next_steps', []) if s.get('priority') == 'high')
             },
             "blockers": len(progress.get('blockers', [])),
-            "last_updated": context.get('last_updated')
+            "last_updated": progress.get('last_updated'),
+            "project": proj,
+            "branch": brch
         }
+
+        return json.dumps({"success": True, "metrics": metrics}, indent=2, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"success": False, "error": str(e)})
+
+
+@mcp.tool()
+def list_all_projects() -> str:
+    """Lista todos os projetos e suas branches."""
+    try:
+        RESUMO_BASE_DIR.mkdir(parents=True, exist_ok=True)
+        projects = {}
+
+        for project_dir in RESUMO_BASE_DIR.iterdir():
+            if project_dir.is_dir():
+                project_name = project_dir.name
+                branches = []
+
+                for branch_dir in project_dir.iterdir():
+                    if branch_dir.is_dir():
+                        branch_name = branch_dir.name
+                        progress_file = branch_dir / "progresso.json"
+
+                        progress_pct = 0
+                        if progress_file.exists():
+                            with open(progress_file, 'r', encoding='utf-8') as f:
+                                data = json.load(f)
+                                progress_pct = data.get('overall_progress', 0)
+
+                        branches.append({
+                            "name": branch_name,
+                            "progress": progress_pct,
+                            "path": str(branch_dir)
+                        })
+
+                projects[project_name] = {
+                    "branches": branches,
+                    "total_branches": len(branches)
+                }
 
         return json.dumps({
             "success": True,
-            "metrics": metrics
-        }, indent=2, ensure_ascii=False)
-
+            "total_projects": len(projects),
+            "projects": projects,
+            "current_context": _GLOBAL_CONTEXT
+        }, indent=2)
     except Exception as e:
-        return json.dumps({
-            "success": False,
-            "error": str(e)
-        })
+        return json.dumps({"success": False, "error": str(e)})
 
 
 def main():

@@ -153,24 +153,28 @@ docker-admin.auto_heal()
 
 ## 💻 Comandos Docker
 
+**Nota:** Apenas 2 MCPs rodam em Docker (docker-admin e api-database-tester).
+Os outros 8 rodam via Python local automaticamente.
+
 ```bash
-# Iniciar
+# Iniciar containers Docker
 docker-compose up -d
 
-# Parar
+# Parar containers
 docker-compose down
 
-# Status
+# Status (deve mostrar apenas 2 containers)
 docker-compose ps
 
 # Logs
-docker-compose logs -f [service]
+docker-compose logs -f docker-admin
+docker-compose logs -f api-database-tester
 
 # Reiniciar
-docker-compose restart [service]
+docker-compose restart [docker-admin|api-database-tester]
 
 # Rebuild
-docker-compose up -d --build [service]
+docker-compose up -d --build [docker-admin|api-database-tester]
 ```
 
 ## 🎨 Reasoning Levels

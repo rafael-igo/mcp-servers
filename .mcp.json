@@ -1,68 +1,44 @@
 {
   "mcpServers": {
     "excel-server": {
-      "command": "docker",
+      "command": "python",
       "args": [
-        "exec",
-        "-i",
-        "igo-excel-server",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/excel-server/server.py"
       ],
       "env": {}
     },
     "agente-orchestrator": {
-      "command": "docker",
+      "command": "python",
       "args": [
-        "exec",
-        "-i",
-        "igo-agente-orchestrator",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/agente-orchestrator/server.py"
       ],
       "env": {}
     },
     "memory-manager": {
-      "command": "docker",
+      "command": "python",
       "args": [
-        "exec",
-        "-i",
-        "igo-memory-manager",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/memory-manager/server.py"
       ],
       "env": {}
     },
     "checklist-validator": {
-      "command": "docker",
+      "command": "python",
       "args": [
-        "exec",
-        "-i",
-        "igo-checklist-validator",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/checklist-validator/server.py"
       ],
       "env": {}
     },
     "agente-insights": {
-      "command": "docker",
+      "command": "python",
       "args": [
-        "exec",
-        "-i",
-        "igo-agente-insights",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/agente-insights/server.py"
       ],
       "env": {}
     },
     "agente-resumo": {
-      "command": "docker",
+      "command": "python",
       "args": [
-        "exec",
-        "-i",
-        "igo-agente-resumo",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/agente-resumo/server.py"
       ],
       "env": {}
     },
@@ -75,16 +51,13 @@
         "python",
         "server.py"
       ],
-      "env": {}
+      "env": {},
+      "comment": "Precisa de Docker (gerencia containers)"
     },
     "igo-openai-gateway": {
-      "command": "docker",
+      "command": "python",
       "args": [
-        "exec",
-        "-i",
-        "igo-openai-gateway",
-        "python",
-        "server.py"
+        "c:/GIT-RAFAEL/mcp-servers/igo-openai-gateway/server.py"
       ],
       "env": {}
     },
@@ -96,6 +69,14 @@
         "igo-api-database-tester",
         "python",
         "server.py"
+      ],
+      "env": {},
+      "comment": "Precisa de Docker (ODBC Driver 18 Linux)"
+    },
+    "vuetify-uiux": {
+      "command": "python",
+      "args": [
+        "c:/GIT-RAFAEL/mcp-servers/vuetify-uiux/server.py"
       ],
       "env": {}
     }

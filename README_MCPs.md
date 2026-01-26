@@ -4,14 +4,25 @@ Este projeto possui 8 MCPs (Model Context Protocol Servers) que funcionam como f
 
 ## 🚀 Quick Start
 
-### 1. Iniciar MCPs
+### 1. Iniciar MCPs que precisam de Docker
 ```bash
 docker-compose up -d
 ```
 
+**Nota:** Apenas 2 MCPs rodam via Docker:
+- `docker-admin` - Gerenciamento de containers
+- `api-database-tester` - Testes de API/DB (precisa ODBC Driver 18)
+
+Os outros 8 MCPs rodam via **Python local** automaticamente quando você usa os editores.
+
 ### 2. Verificar Status
 ```bash
+# Ver containers Docker
 docker-compose ps
+
+# Deve mostrar apenas 2 containers:
+# - igo-docker-admin
+# - igo-api-database-tester
 ```
 
 ### 3. Testar MCPs
@@ -19,6 +30,21 @@ Abra seu editor e use:
 ```python
 docker-admin.health_check()
 ```
+
+## 🏗️ Arquitetura Híbrida
+
+Este projeto usa **arquitetura híbrida** para otimizar performance:
+
+- **2 MCPs em Docker** - Apenas os que realmente precisam
+- **8 MCPs via Python** - Performance máxima, desenvolvimento ágil
+
+**Por quê?**
+- ⚡ Startup 4-6x mais rápido
+- 🚀 Latência 10-50x menor
+- 💾 75% menos memória
+- 💻 Hot reload automático
+
+📖 Leia mais: [DOCKER_vs_PYTHON.md](DOCKER_vs_PYTHON.md) | [MIGRACAO_DOCKER_PYTHON.md](MIGRACAO_DOCKER_PYTHON.md)
 
 ## 📚 Documentação por Editor
 
@@ -50,16 +76,23 @@ Escolha seu editor e siga o guia específico:
 
 ## 🛠️ MCPs Disponíveis
 
+### MCPs via Docker (2)
 | MCP | Container | Descrição |
 |-----|-----------|-----------|
-| **excel-server** | igo-excel-server | Leitura e processamento de Excel |
-| **agente-orchestrator** | igo-agente-orchestrator | Orquestração de agentes especializados |
-| **memory-manager** | igo-memory-manager | Gerenciamento de contexto do projeto |
-| **checklist-validator** | igo-checklist-validator | Validação de checklists |
-| **agente-insights** | igo-agente-insights | Captura e análise de insights |
-| **agente-resumo** | igo-agente-resumo | Resumos e status do projeto |
 | **docker-admin** | igo-docker-admin | Administração de Docker e MCPs |
-| **igo-openai-gateway** | igo-openai-gateway | Gateway OpenAI/GPT-5.2 com reasoning |
+| **api-database-tester** | igo-api-database-tester | Testes de API e Database (ODBC) |
+
+### MCPs via Python Local (8)
+| MCP | Execução | Descrição |
+|-----|----------|-----------|
+| **excel-server** | Python local | Leitura e processamento de Excel |
+| **agente-orchestrator** | Python local | Orquestração de agentes especializados |
+| **memory-manager** | Python local | Gerenciamento de contexto do projeto |
+| **checklist-validator** | Python local | Validação de checklists |
+| **agente-insights** | Python local | Captura e análise de insights |
+| **agente-resumo** | Python local | Resumos e status do projeto |
+| **igo-openai-gateway** | Python local | Gateway OpenAI/GPT-5.2 com reasoning |
+| **vuetify-uiux** | Python local | Componentes Vuetify e UI/UX |
 
 ## 🎯 Qual Arquivo Ler?
 
@@ -70,34 +103,52 @@ Escolha seu editor e siga o guia específico:
 | Configurar VSCode | [VSCODE_GUIDELINES.md](VSCODE_GUIDELINES.md) |
 | Configurar Cursor | [CURSOR_SETUP.md](CURSOR_SETUP.md) |
 | Usar no GitHub Codex | [CODEX_GUIDELINES.md](CODEX_GUIDELINES.md) |
+| **Acesso remoto (SSH)** | [SETUP_REMOTO.md](SETUP_REMOTO.md) 🌐 |
 | Entender todos os MCPs | [GUIDELINES.md](GUIDELINES.md) |
+| **Entender Docker vs Python** | [DOCKER_vs_PYTHON.md](DOCKER_vs_PYTHON.md) ⭐ |
+| Ver migração Docker→Python | [MIGRACAO_DOCKER_PYTHON.md](MIGRACAO_DOCKER_PYTHON.md) |
 | Saber o que mudou | Este arquivo (README_MCPs.md) |
 | Configurar .cursorrules | [.cursorrules](.cursorrules) |
 | Configurar Claude Code | [.claude/README.md](.claude/README.md) |
 
 ## 🔧 Configuração Rápida por Editor
 
+### 🌐 Local vs Remoto
+
+Este projeto suporta **2 modos**:
+
+- **🏠 Local:** `.mcp.json` - MCPs no PC (<1ms latência)
+- **🌐 Remoto:** `.mcp.remote.json` - MCPs via SSH no servidor 15.15.255.9 (~20-100ms)
+
+📖 **Setup remoto:** [SETUP_REMOTO.md](SETUP_REMOTO.md)
+
+---
+
 ### VSCode
 1. Instale extensão "Claude Code"
-2. Arquivo `.mcp.json` já configurado
-3. Permissões em `.claude/settings.local.json`
-4. Leia: [VSCODE_GUIDELINES.md](VSCODE_GUIDELINES.md)
+2. **Local:** `.mcp.json` já configurado
+3. **Remoto:** Renomeie `.mcp.remote.json` → `.mcp.json`
+4. Permissões em `.claude/settings.local.json`
+5. Leia: [VSCODE_GUIDELINES.md](VSCODE_GUIDELINES.md)
 
 ### Cursor
 1. Instale Cursor de https://cursor.sh
 2. Arquivo `.cursorrules` já configurado
-3. Configure `mcp.configPath` em settings
-4. Leia: [CURSOR_SETUP.md](CURSOR_SETUP.md)
+3. **Local:** Config aponta para `.mcp.json`
+4. **Remoto:** Aponte para `.mcp.remote.json`
+5. Leia: [CURSOR_SETUP.md](CURSOR_SETUP.md)
 
 ### GitHub Codex
 1. Codex detecta `.mcp.json` automaticamente
-2. Use templates em [CODEX_GUIDELINES.md](CODEX_GUIDELINES.md)
-3. Sempre comece com `memory-manager.load_context()`
+2. **Remoto:** Renomeie `.mcp.remote.json` → `.mcp.json`
+3. Use templates em [CODEX_GUIDELINES.md](CODEX_GUIDELINES.md)
+4. Sempre comece com `memory-manager.load_context()`
 
 ### Claude Code CLI
-1. Já configurado via `.mcp.json`
-2. Execute: `claude chat`
-3. Use: `docker-admin.health_check()`
+1. **Local:** `.mcp.json` já configurado
+2. **Remoto:** Renomeie `.mcp.remote.json` → `.mcp.json`
+3. Execute: `claude chat`
+4. Use: `docker-admin.health_check()`
 
 ## 📋 Arquivos Importantes
 

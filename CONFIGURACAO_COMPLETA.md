@@ -43,6 +43,18 @@ mcp-servers/
 │   ├─ Troubleshooting
 │   └─ Casos de uso comuns
 │
+├─🏗️ DOCKER_vs_PYTHON.md               🔀 Arquitetura
+│   ├─ Por que híbrida?
+│   ├─ 2 MCPs Docker + 8 Python
+│   ├─ Comparações de performance
+│   └─ Quando usar cada um
+│
+├─🔄 MIGRACAO_DOCKER_PYTHON.md         📊 Migração
+│   ├─ Antes e depois
+│   ├─ Impacto na performance
+│   ├─ Benefícios observados
+│   └─ Como migrar de volta
+│
 ├─⚙️ .cursorrules                       🎯 Cursor Auto-config
 │   └─ Regras automáticas para Cursor (carregado automaticamente)
 │

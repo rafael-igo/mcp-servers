@@ -15,9 +15,17 @@ from mcp.server.fastmcp import FastMCP
 mcp = FastMCP("agente-orchestrator")
 
 # Caminho base do projeto
-# Usar /project como base (volume montado pelo docker-compose)
-PROJECT_ROOT = Path("/project")
-DOCS_DIR = PROJECT_ROOT / "api" / "mcp-servers" / "docs"
+# Detectar se está rodando em Docker ou Windows local
+import sys
+if sys.platform == "win32":
+    # Windows local
+    PROJECT_ROOT = Path("c:/GIT-RAFAEL/mcp-servers")
+    DOCS_DIR = PROJECT_ROOT / "docs"
+else:
+    # Docker (Linux)
+    PROJECT_ROOT = Path("/project")
+    DOCS_DIR = PROJECT_ROOT / "GIT-RAFAEL" / "mcp-servers" / "docs"
+
 AGENTES_DIR = DOCS_DIR / "agentes"
 MEMORIA_DIR = DOCS_DIR / "memoria"
 
@@ -41,7 +49,7 @@ def list_agents() -> str:
             else:
                 raise
 
-        # Listar MCPs disponíveis
+        # Listar MCPs disponíveis (serviços Docker independentes)
         mcps = [
             {
                 "name": "agente-insights",
@@ -56,12 +64,6 @@ def list_agents() -> str:
                 "description": "Status, progresso, relatórios e métricas"
             },
             {
-                "name": "vuetify-uiux",
-                "type": "mcp",
-                "title": "Agente UI/UX Design",
-                "description": "Design, layouts Vuetify 3, boas práticas e padrões visuais"
-            },
-            {
                 "name": "igo-openai-gateway",
                 "type": "mcp",
                 "title": "OpenAI Gateway",
@@ -72,6 +74,36 @@ def list_agents() -> str:
                 "type": "mcp",
                 "title": "API & Database Tester",
                 "description": "Executa requisições HTTP e queries SQL em SQL Server/PostgreSQL"
+            },
+            {
+                "name": "excel-server",
+                "type": "mcp",
+                "title": "Excel Server",
+                "description": "Leitura e manipulação de arquivos Excel"
+            },
+            {
+                "name": "memory-manager",
+                "type": "mcp",
+                "title": "Memory Manager",
+                "description": "Gerenciamento de contexto e memória do projeto"
+            },
+            {
+                "name": "checklist-validator",
+                "type": "mcp",
+                "title": "Checklist Validator",
+                "description": "Validação e gerenciamento de checklists"
+            },
+            {
+                "name": "docker-admin",
+                "type": "mcp",
+                "title": "Docker Admin",
+                "description": "Gerenciamento de containers Docker e infraestrutura"
+            },
+            {
+                "name": "vuetify-uiux",
+                "type": "mcp",
+                "title": "Vuetify UI/UX Assistant",
+                "description": "Consultor de design Vuetify 3: componentes, layouts, cores e acessibilidade"
             }
         ]
 
@@ -304,6 +336,112 @@ def update_agent_memory(action: str, details: str) -> str:
             "message": "Memória atualizada com sucesso",
             "timestamp": timestamp
         })
+
+    except Exception as e:
+        return json.dumps({
+            "success": False,
+            "error": str(e)
+        })
+
+
+@mcp.tool()
+def ask_ai_to_decide(
+    user_request: str,
+    project: str = "default",
+    branch: str = "main"
+) -> str:
+    """
+    Usa IA (GPT-5.2) para decidir qual agente usar baseado na requisição do usuário.
+
+    Esta é a funcionalidade "cérebro" do orchestrator - quando você não sabe qual
+    agente chamar, pergunte à IA!
+
+    IMPORTANTE: Esta tool prepara os dados e retorna instruções para Claude Code
+    chamar o igo-openai-gateway::decide_agent com reasoning.
+
+    Args:
+        user_request: Requisição do usuário (pode ser ambígua ou complexa)
+        project: Nome do projeto (default: "default")
+        branch: Nome da branch (default: "main")
+
+    Returns:
+        JSON com dados preparados e próximos passos
+
+    Exemplo de uso:
+        ask_ai_to_decide(
+            user_request="Preciso melhorar a performance do rooming list",
+            project="igo-journey",
+            branch="main"
+        )
+
+        Resultado: Dados preparados para chamar igo-openai-gateway::decide_agent
+    """
+    try:
+        # 1. Coletar lista de agentes disponíveis
+        agents_result = list_agents()
+        agents_data = json.loads(agents_result)
+
+        if not agents_data.get("success"):
+            return json.dumps({
+                "success": False,
+                "error": "Falha ao coletar lista de agentes",
+                "details": agents_data
+            })
+
+        # 2. Carregar contexto do projeto
+        context = ""
+        context_file = MEMORIA_DIR / project / branch / "contexto-atual.md"
+        if context_file.exists():
+            with open(context_file, 'r', encoding='utf-8') as f:
+                context = f.read()
+        else:
+            # Tentar contexto flat (backwards compatibility)
+            old_context_file = MEMORIA_DIR / "contexto-atual.md"
+            if old_context_file.exists():
+                with open(old_context_file, 'r', encoding='utf-8') as f:
+                    context = f.read()
+
+        # 3. Preparar dados para o gateway
+        gateway_input = {
+            "user_request": user_request,
+            "available_agents": json.dumps(agents_data, ensure_ascii=False),
+            "project_context": context,
+            "project": project,
+            "branch": branch
+        }
+
+        # 4. Retornar instruções e dados
+        return json.dumps({
+            "success": True,
+            "message": "Dados preparados para decisão de IA",
+            "next_step": {
+                "action": "call_gateway",
+                "mcp": "igo-openai-gateway",
+                "tool": "decide_agent",
+                "parameters": {
+                    "user_request": user_request,
+                    "available_agents": json.dumps(agents_data, ensure_ascii=False),
+                    "project_context": context,
+                    "reasoning_effort": "high"
+                }
+            },
+            "instructions": """
+PRÓXIMO PASSO:
+Chame o MCP 'igo-openai-gateway' com a tool 'decide_agent' usando os parâmetros acima.
+
+A IA irá analisar a requisição e recomendar qual(is) agente(s) usar com explicação detalhada.
+
+Após receber a decisão, você pode:
+1. Invocar o agente recomendado usando invoke_agent()
+2. Ou usar run_agent() do igo-openai-gateway se preferir execução direta com GPT-5.2
+""",
+            "prepared_data": gateway_input,
+            "agents_available": {
+                "mcps": agents_data.get("mcps", []),
+                "agents": agents_data.get("agents", []),
+                "total": agents_data.get("count", 0)
+            }
+        }, indent=2, ensure_ascii=False)
 
     except Exception as e:
         return json.dumps({

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "INS-0001",
+    "timestamp": "2026-01-26T01:25:13.717224",
+    "type": "feature",
+    "complexity": "high",
+    "status": "captured",
+    "idea": "Sistema multi-projeto implementado",
+    "modules": [
+      "memory-manager",
+      "agente-insights"
+    ],
+    "agents_consulted": [],
+    "analysis": {},
+    "decision": null,
+    "next_steps": [],
+    "project": "igo-journey",
+    "branch": "main"
+  }
+]

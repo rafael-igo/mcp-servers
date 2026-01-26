@@ -20,7 +20,8 @@
       "mcp__checklist-validator__get_pending_tasks",
       "mcp__excel-server__*",
       "mcp__igo-openai-gateway__list_available_agents",
-      "mcp__api-database-tester__*"
+      "mcp__api-database-tester__*",
+      "mcp__vuetify-uiux__*"
     ]
   },
   "enableAllProjectMcpServers": true
