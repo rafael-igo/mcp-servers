@@ -1,0 +1,160 @@
+{
+  "LandingPageDinamica": {
+    "arquivo": "src/components/LandingPageDinamica.vue",
+    "responsabilidade": "Componente raiz da landing page que orquestra todos os módulos",
+    "props": {},
+    "emits": [],
+    "slots": [],
+    "dependencias": ["ModuloCabecalho", "RenderModulos", "ModuloFooter", "DialogoUniversal"],
+    "usa_stores": ["mainStore", "formularioStore"],
+    "exemplo_uso": "<LandingPageDinamica />"
+  },
+  "RenderModulos": {
+    "arquivo": "src/components/ModulosDinamicos/RenderModulos.vue",
+    "responsabilidade": "Orquestrador que renderiza módulos dinamicamente baseado em lp_conteudo",
+    "props": {
+      "conteudo": "Array de módulos do idioma ativo"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": ["ModuloSobre", "ModuloFormulario", "ModuloAgenda", "ModuloPalestrantes", "ModuloContato", "ModuloCronometro", "ModuloLocal", "ModuloRedesSociais"],
+    "usa_stores": ["mainStore"],
+    "exemplo_uso": "<RenderModulos :conteudo=\"lp_conteudo\" />"
+  },
+  "ModuloCabecalho": {
+    "arquivo": "src/components/ModulosDinamicos/ModuloCabecalho.vue",
+    "responsabilidade": "Header fixo com logo, menu horizontal/drawer mobile, botões de ação",
+    "props": {
+      "conteudo": "Configuração do cabeçalho (logos, menu, botoes)",
+      "estilos": "Estilos globais da LP"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": ["mainStore"],
+    "exemplo_uso": "<ModuloCabecalho :conteudo=\"cabecalhoConfig\" :estilos=\"lp_estilos\" />"
+  },
+  "ModuloFormulario": {
+    "arquivo": "src/components/ModulosDinamicos/ModuloFormulario.vue",
+    "responsabilidade": "Wrapper para formulários (FormularioSistemaPadrao ou FormularioChaveUnica)",
+    "props": {
+      "modulo": "Configuração do módulo formulário",
+      "estilos": "Estilos globais"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": ["FormularioSistemaPadrao", "FormularioChaveUnica"],
+    "usa_stores": ["mainStore", "formularioStore"],
+    "exemplo_uso": "<ModuloFormulario :modulo=\"formularioModulo\" />"
+  },
+  "ModuloSobre": {
+    "arquivo": "src/components/ModulosDinamicos/ModuloSobre.vue",
+    "responsabilidade": "Seção 'Sobre' com descrição do evento e botão de cadastro IGO",
+    "props": {
+      "modulo": "Configuração do módulo sobre"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": ["mainStore"],
+    "exemplo_uso": "<ModuloSobre :modulo=\"sobreModulo\" />"
+  },
+  "ModuloAgenda": {
+    "arquivo": "src/components/ModulosDinamicos/ModuloAgenda.vue",
+    "responsabilidade": "Programação do evento com tabs por dia",
+    "props": {
+      "modulo": "Configuração da agenda"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": [],
+    "exemplo_uso": "<ModuloAgenda :modulo=\"agendaModulo\" />"
+  },
+  "ModuloPalestrantes": {
+    "arquivo": "src/components/ModulosDinamicos/ModuloPalestrantes.vue",
+    "responsabilidade": "Grid de palestrantes com cards customizáveis",
+    "props": {
+      "modulo": "Configuração de palestrantes (listas, fotos, bios)"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": [],
+    "exemplo_uso": "<ModuloPalestrantes :modulo=\"palestrantesModulo\" />"
+  },
+  "ModuloFooter": {
+    "arquivo": "src/components/ModulosDinamicos/ModuloFooter.vue",
+    "responsabilidade": "Rodapé com informações legais e copyright",
+    "props": {
+      "conteudo": "Configuração do footer"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": [],
+    "exemplo_uso": "<ModuloFooter :conteudo=\"footerConfig\" />"
+  },
+  "FormularioSistemaPadrao": {
+    "arquivo": "src/Formularios/FormularioSistemaPadrao.vue",
+    "responsabilidade": "Formulário principal com campos dinâmicos, estados (pendente/confirmado/final), acompanhantes",
+    "props": {
+      "dados-iniciais": "Dados iniciais do PAX",
+      "configuracao-prop": "Configuração do formulário",
+      "acompanhante_config": "Se é contexto de acompanhante"
+    },
+    "emits": ["submit"],
+    "slots": [],
+    "dependencias": ["FormularioDinamico_V5", "UploadFiles"],
+    "usa_stores": ["mainStore", "formularioStore", "colaboradorStore"],
+    "exemplo_uso": "<FormularioSistemaPadrao @submit=\"handleSubmit\" />"
+  },
+  "FormularioChaveUnica": {
+    "arquivo": "src/Formularios/FormularioChaveUnica.vue",
+    "responsabilidade": "Identificação por chave única (email, celular, CPF, código)",
+    "props": {
+      "tipo_chave": "Tipo de chave (email, celular, cpf, codigo)",
+      "mensagem_nao_encontrado": "Mensagem quando não encontrar"
+    },
+    "emits": ["submit", "identificado"],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": ["mainStore", "formularioStore"],
+    "exemplo_uso": "<FormularioChaveUnica tipo_chave=\"email\" @identificado=\"handleIdentificado\" />"
+  },
+  "formComponenteChave": {
+    "arquivo": "src/Formularios/formComponenteChave.vue",
+    "responsabilidade": "Pesquisa por celular com fallback para email/CPF (3 tentativas)",
+    "props": {},
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": ["mainStore", "formularioStore"],
+    "exemplo_uso": "<formComponenteChave />"
+  },
+  "DialogoUniversal": {
+    "arquivo": "src/components/dialogs/DialogoUniversal.vue",
+    "responsabilidade": "Dialog universal configurável para mensagens de status, erros, confirmações",
+    "props": {
+      "config": "Objeto com titulo, texto, texto2, dialog, dialog_config, imagem, qrcode"
+    },
+    "emits": ["update:config"],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": [],
+    "exemplo_uso": "<DialogoUniversal :config=\"universalMsg\" @update:config=\"hideMsg\" />"
+  },
+  "UploadFiles": {
+    "arquivo": "src/components/uploads/UploadFiles.vue",
+    "responsabilidade": "Componente de upload de arquivos (passaporte, CNH, etc)",
+    "props": {
+      "campo": "Nome do campo de upload",
+      "socio": "Tipo de sócio (AÉREO, TRANSFER, HOSPEDAGEM)"
+    },
+    "emits": ["uploaded"],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": ["mainStore", "formularioStore"],
+    "exemplo_uso": "<UploadFiles campo=\"upload1\" socio=\"AÉREO\" />"
+  }
+}

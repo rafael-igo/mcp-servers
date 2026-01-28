@@ -1,0 +1,137 @@
+{
+  "mainStore": {
+    "arquivo": "src/stores/mainStore.pinia.js",
+    "responsabilidade": "Store central com configuração do evento, LP, flow, mensagens e flags globais",
+    "state": {
+      "dadosEvento": "Objeto com config do evento (id, nome, controles, datas, local)",
+      "lp_estilos": "Estilos globais da LP (JSON parseado)",
+      "lp_conteudo": "Conteúdo estático dos módulos (JSON parseado)",
+      "lp_modulos": "Configuração de uploads (JSON parseado)",
+      "lp_formulario": "Configuração de formulários V5 (JSON parseado)",
+      "lpFlow": "Flow RSVP completo (JSON parseado)",
+      "lpFlowVersao": "Versão do flow",
+      "universalMsg": "Objeto para DialogoUniversal (titulo, texto, dialog, dialog_config)",
+      "cadastroIgo": "boolean - Ativa redirecionamento IGO",
+      "runtime": "Objeto com contexto de runtime (modo_entrada, funcao_chave)",
+      "pesquisaCpfEmailConfig": "Config do pesquisa_cpf_email (form_id_fallback, acao_submit)",
+      "chaveUnicaConfig": "Config do chave_unica (tipo_chave, form_id_encontrado, mensagem)",
+      "formularioAtivoId": "ID do formulário ativo",
+      "pax": "Dados do PAX principal (obsoleto, usar formularioStore.pax)"
+    },
+    "actions": [
+      "puxaDadosAppData(base64, query) - Carrega evento completo da API",
+      "mostraUniversalMsg(dados) - Exibe dialog universal",
+      "hideUniversalMsg() - Fecha dialog e executa scroll",
+      "updateDadosEvento(dados) - Atualiza config do evento"
+    ],
+    "getters": [
+      "isMenuDesktop - Menu desktop ativo?",
+      "currentEvento - Atalho para dadosEvento",
+      "isFormClosed - Formulário fechado?"
+    ],
+    "conexoes": ["formularioStore", "colaboradorStore", "eventoStore"],
+    "persistencia": null
+  },
+  "formularioStore": {
+    "arquivo": "src/stores/formularioStore.js",
+    "responsabilidade": "Store do formulário principal com PAX, respostas, validações e submit",
+    "state": {
+      "pax": "Objeto com dados do participante (nome, email, cpf, status_presenca, etc)",
+      "respostas": "Snapshot de campos respondidos (sync com FormularioDinamico_V5)",
+      "mostraFormulario_padrao": "boolean - Mostrar formulário padrão?",
+      "mostraPerguntas": "boolean - Mostrar seção de perguntas?",
+      "mostraChave": "boolean - Mostrar formulário de chave?",
+      "isPaxPrincipal": "boolean - Contexto principal ou adicional?",
+      "submitting": "boolean - Flag de bloqueio durante submit",
+      "loadingForm": "boolean - Loading de envio",
+      "layoutFormulario": "Estilos do formulário (variant, density, color, etc)",
+      "rules": "Regras de validação (required, email, cpf, etc)"
+    },
+    "actions": [
+      "submit(jantar, options) - Submete formulário com proteção anti-conflito",
+      "identificarPaxPorChave(dadosIdentificacao) - Identifica via chave única",
+      "initLayoutFormulario() - Inicializa estilos do formulário",
+      "setRespostas(obj) - Seta snapshot de respostas"
+    ],
+    "getters": [
+      "dadosEvento - Atalho para mainStore.dadosEvento"
+    ],
+    "conexoes": ["mainStore", "colaboradorStore"],
+    "persistencia": null
+  },
+  "colaboradorStore": {
+    "arquivo": "src/stores/colaboradorStore.js",
+    "responsabilidade": "Store de acompanhantes com lista, cota e validação de duplicidade",
+    "state": {
+      "colaboradores": "Array de acompanhantes",
+      "cota": "Número máximo de acompanhantes",
+      "mostraAdicionar": "boolean - Mostrar botão adicionar?",
+      "adicionandoAcompanhante": "boolean - Flag de contexto de adição",
+      "nomesConfirmados": "Array de nomes únicos confirmados",
+      "cpfsConfirmados": "Array de CPFs únicos (sem formatação)",
+      "emailsConfirmados": "Array de emails únicos (lowercase)",
+      "mostraFormulario_colaborador": "boolean - Mostrar formulário de colaborador?"
+    },
+    "actions": [
+      "adicionarColaborador(pax) - Adiciona novo acompanhante",
+      "removerColaborador(index) - Remove acompanhante",
+      "verificarCPFExistente(cpf) - Verifica duplicidade de CPF",
+      "verificarEmailExistente(email) - Verifica duplicidade de email",
+      "atribuirCota(cota) - Seta cota de acompanhantes"
+    ],
+    "getters": [],
+    "conexoes": ["mainStore", "formularioStore"],
+    "persistencia": null
+  },
+  "eventoStore": {
+    "arquivo": "src/stores/eventoStore.js",
+    "responsabilidade": "Store para seleção de agências, clientes e eventos no admin panel",
+    "state": {
+      "agencias": "Array de agências disponíveis",
+      "clientes": "Array de clientes da agência selecionada",
+      "eventos": "Array de eventos do cliente selecionado",
+      "agenciaSelecionada": "ID da agência selecionada",
+      "clienteSelecionado": "ID do cliente selecionado",
+      "eventoSelecionado": "ID do evento selecionado",
+      "dadosEvento": "Dados completos do evento selecionado"
+    },
+    "actions": [
+      "carregarAgencias() - Carrega lista de agências",
+      "selecionarAgencia(agenciaId) - Seleciona agência e carrega clientes",
+      "selecionarCliente(clienteData) - Seleciona cliente e carrega eventos",
+      "selecionarEvento(eventoId) - Seleciona evento e carrega dados"
+    ],
+    "getters": [
+      "agenciasItems - Para v-select",
+      "clientesItems - Para v-select",
+      "eventosItems - Para v-select",
+      "isLoading - Algum loading ativo?"
+    ],
+    "conexoes": ["adminStore"],
+    "persistencia": "sessionStorage"
+  },
+  "adminStore": {
+    "arquivo": "src/stores/adminStore.js",
+    "responsabilidade": "Store de autenticação e autorização do admin panel",
+    "state": {
+      "isAuthenticated": "boolean - Usuário autenticado?",
+      "user": "Objeto com dados do usuário (categoria, email)",
+      "token": "Token JWT",
+      "drawer": "boolean - Drawer do admin aberto?",
+      "editorMode": "boolean - Modo editor ativo?",
+      "previewMode": "boolean - Modo preview ativo?"
+    },
+    "actions": [
+      "initAuth() - Inicializa autenticação com dados salvos",
+      "login(credentials) - Login de administrador",
+      "logout() - Logout completo",
+      "checkAuth() - Verifica se token é válido"
+    ],
+    "getters": [
+      "hasIGORSVPPermission - categoria === 'IGO_RSVP'?",
+      "isLoggedIn - isAuthenticated && token?"
+    ],
+    "conexoes": ["eventoStore"],
+    "persistencia": "localStorage"
+  }
+}

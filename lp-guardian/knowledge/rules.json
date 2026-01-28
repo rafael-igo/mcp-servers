@@ -1,0 +1,136 @@
+{
+  "lp_flow": {
+    "campos_obrigatorios": [],
+    "campos_validos": [
+      "versao",
+      "status_rules",
+      "runtime_rules",
+      "condicoes_fluxo",
+      "mapa_formularios",
+      "mensagens",
+      "fallbacks"
+    ],
+    "validacoes": {
+      "status_rules": {
+        "tipo": "array",
+        "item": {
+          "campos_obrigatorios": ["match", "acao"],
+          "campos_validos": ["nome", "match", "acao", "mensagem", "titulo", "texto"]
+        }
+      },
+      "runtime_rules": {
+        "tipo": "array",
+        "item": {
+          "campos_obrigatorios": ["chave", "valor", "acao"],
+          "campos_validos": ["chave", "valor", "acao"]
+        }
+      },
+      "mapa_formularios": {
+        "tipo": "object",
+        "campos_validos": ["principal", "optin", "encontrado", "acompanhante"]
+      },
+      "mensagens": {
+        "tipo": "object",
+        "campos_validos": ["confirmado", "cancelado", "pendente", "analise", "prazo_vencido"]
+      }
+    }
+  },
+  "lp_formulario": {
+    "campos_obrigatorios": [],
+    "campos_validos": [
+      "formularios",
+      "layoutFormulario",
+      "termos"
+    ],
+    "validacoes": {
+      "formularios": {
+        "tipo": "array",
+        "item": {
+          "campos_obrigatorios": ["id", "campos"],
+          "campos_validos": ["id", "nome", "campos", "titulo", "subtitulo"]
+        }
+      },
+      "layoutFormulario": {
+        "tipo": "object",
+        "campos_validos": [
+          "variant",
+          "density",
+          "color",
+          "rounded",
+          "bgColor",
+          "elevation",
+          "textColor",
+          "labelColor",
+          "estilosVisuais",
+          "interatividade"
+        ]
+      }
+    }
+  },
+  "lp_conteudo": {
+    "campos_obrigatorios": [],
+    "campos_validos": [
+      "ativo",
+      "idioma",
+      "modulos"
+    ],
+    "validacoes": {
+      "modulos": {
+        "tipo": "array",
+        "item": {
+          "campos_obrigatorios": ["tipo", "ativo"],
+          "campos_validos": ["tipo", "ativo", "ordem", "conteudo", "sessao_estilo_id"]
+        }
+      }
+    }
+  },
+  "operadores_condicao": {
+    "igual": "Valor exato (normalizado)",
+    "diferente": "Valor diferente",
+    "contem": "Contém substring (case insensitive)",
+    "nao_contem": "Não contém substring",
+    "em": "Valor está na lista",
+    "nao_em": "Valor não está na lista",
+    "vazio": "Campo vazio/null",
+    "preenchido": "Campo tem valor",
+    "maior": "Número maior que",
+    "menor": "Número menor que",
+    "maior_igual": "Número maior ou igual",
+    "menor_igual": "Número menor ou igual"
+  },
+  "tipos_acao": {
+    "abrir_form": "Abre formulário especificado (form_id)",
+    "mensagem": "Exibe mensagem/dialog (titulo, texto, texto2, classe)",
+    "abrir_upload": "Solicita upload de documento",
+    "verificar_acompanhante": "Abre formulário de acompanhante",
+    "pesquisa_cpf_email": "Abre pesquisa por CPF/email (3 tentativas)",
+    "chave_unica": "Abre formulário de chave única"
+  },
+  "status_presenca_validos": [
+    "PENDENTE",
+    "CONFIRMADO",
+    "INSCRITO",
+    "EM ANALISE",
+    "ANALISAR INSCRICAO",
+    "CANCELADO",
+    "REJEITADO",
+    "PRAZO VENCIDO",
+    "PERDEU O PRAZO"
+  ],
+  "campos_pax_restritos": [
+    "upload1",
+    "upload2",
+    "upload3",
+    "upload4",
+    "upload5",
+    "id_pax_evento",
+    "id_linha_pax"
+  ],
+  "hierarquia_mensagens": [
+    "1. Admin Editor (lp_conteudo.modulos[formulario].conteudo.titulo_card.presets)",
+    "2. Runtime (mainStore.runtime.mensagens_status)",
+    "3. campo_tipo_5.controles.mensagens_status",
+    "4. lpFlow.mensagens",
+    "5. Fallback hardcoded (getMensagemDoFlow)"
+  ]
+}

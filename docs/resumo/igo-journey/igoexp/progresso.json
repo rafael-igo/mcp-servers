@@ -1,0 +1,128 @@
+{
+  "project_name": "Novo Projeto",
+  "phase": "Planejamento",
+  "overall_progress": 85,
+  "modules": {
+    "Frontend Layout": {
+      "progress": 80,
+      "status": "in_progress",
+      "features_total": 0,
+      "features_done": 0,
+      "history": [
+        {
+          "timestamp": "2026-01-26T04:24:39.058219",
+          "progress_change": "0% → 80%",
+          "notes": "Bug identificado: botao hamburger so aparece no mobile. Quando sidebar colapsa no desktop, nao tem botao para expandir. Solucao: mostrar botao sempre que colapsado OU usar Vuetify Navigation Rail."
+        }
+      ]
+    },
+    "API Backend": {
+      "progress": 70,
+      "status": "in_progress",
+      "features_total": 0,
+      "features_done": 0,
+      "history": [
+        {
+          "timestamp": "2026-01-26T04:24:39.077208",
+          "progress_change": "0% → 70%",
+          "notes": "Migracoes criadas: init.sql, 002_complete_schema.sql, 003_ai_first_schema.sql. Runner criado. DB_HOST corrigido de postgres para localhost."
+        }
+      ]
+    },
+    "UI/UX": {
+      "progress": 70,
+      "status": "in_progress",
+      "features_total": 0,
+      "features_done": 0,
+      "history": [
+        {
+          "timestamp": "2026-01-26T04:29:15.184094",
+          "progress_change": "0% → 70%",
+          "notes": "Sidebar e Header corrigidos. Ícones funcionando. Falta revisar responsividade mobile."
+        }
+      ]
+    },
+    "Database": {
+      "progress": 100,
+      "status": "completed",
+      "features_total": 0,
+      "features_done": 0,
+      "history": [
+        {
+          "timestamp": "2026-01-26T04:29:15.204844",
+          "progress_change": "0% → 80%",
+          "notes": "Schema IA-First criado com pgvector opcional. Migrations 001, 002, 003 prontas. Falta rodar migrations e testar."
+        },
+        {
+          "timestamp": "2026-01-26T05:32:32.531462",
+          "progress_change": "80% → 100%",
+          "notes": "3 migrations executadas. 2 eventos, 10 pax, 7 usuários, 2 empresas, 1 hotel. PostgreSQL rodando em Docker"
+        }
+      ]
+    },
+    "UI/UX Sidebar": {
+      "progress": 100,
+      "status": "completed",
+      "features_total": 0,
+      "features_done": 0,
+      "history": [
+        {
+          "timestamp": "2026-01-26T05:05:23.127817",
+          "progress_change": "0% → 100%",
+          "notes": "Toggle no footer do drawer, ícones corrigidos (airplane, domain, bus), funciona em rail mode"
+        }
+      ]
+    },
+    "Autenticação": {
+      "progress": 100,
+      "status": "completed",
+      "features_total": 0,
+      "features_done": 0,
+      "history": [
+        {
+          "timestamp": "2026-01-26T05:32:32.514545",
+          "progress_change": "0% → 100%",
+          "notes": "Login funcionando. Credenciais: admin@igopulse.com/admin123. Corrigido problema de mixed content HTTPS/HTTP"
+        }
+      ]
+    },
+    "Transfer Logistics": {
+      "progress": 75,
+      "status": "in_progress",
+      "features_total": 0,
+      "features_done": 0,
+      "history": [
+        {
+          "timestamp": "2026-01-26T11:14:22.276783",
+          "progress_change": "0% → 75%",
+          "notes": "Implementado: edição de passageiro (INS-0003), edição de nome do grupo, ControlPanel compacto, indicadores no-show. Pendente: persistência no banco, integração completa com API."
+        }
+      ]
+    }
+  },
+  "next_steps": [
+    {
+      "task": "Executar migration 004_transfer_group_name.sql no PostgreSQL",
+      "priority": "high",
+      "estimate": "5min",
+      "module": "Database",
+      "added_at": "2026-01-26T11:14:33.853136"
+    },
+    {
+      "task": "Testar edição de nome do grupo no frontend conectado à API",
+      "priority": "high",
+      "estimate": "15min",
+      "module": "Transfer Logistics",
+      "added_at": "2026-01-26T11:14:33.875920"
+    },
+    {
+      "task": "Implementar persistência dos grupos de transfer no banco (salvar da memória local para API)",
+      "priority": "medium",
+      "estimate": "30min",
+      "module": "Transfer Logistics",
+      "added_at": "2026-01-26T11:14:33.896935"
+    }
+  ],
+  "blockers": [],
+  "last_updated": "2026-01-26T11:14:33.896971"
+}

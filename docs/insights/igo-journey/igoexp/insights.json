@@ -1,0 +1,122 @@
+[
+  {
+    "id": "INS-0001",
+    "timestamp": "2026-01-26T04:23:45.146262",
+    "type": "bug",
+    "complexity": "medium",
+    "status": "implemented",
+    "idea": "BUG UI/UX: Menu lateral (Sidebar) inicia recolhido sem botao para abrir. Deveria usar o padrao Vuetify Navigation Rail (v-navigation-drawer com rail) que mostra apenas icones quando recolhido e expande ao clicar. Arquivo: src/components/Layout/Sidebar.vue",
+    "modules": [
+      "frontend",
+      "layout",
+      "sidebar",
+      "vuetify"
+    ],
+    "agents_consulted": [],
+    "analysis": {},
+    "decision": null,
+    "next_steps": [],
+    "project": "igo-journey",
+    "branch": "igoexp",
+    "updated_at": "2026-01-26T04:29:22.362861",
+    "status_history": [
+      {
+        "from": "captured",
+        "to": "implemented",
+        "timestamp": "2026-01-26T04:29:22.362895",
+        "notes": "Bug corrigido: hamburger button agora aparece quando sidebarCollapsed=true, não apenas em mobile. Ícones mdi-car-estate e mdi-bed substituídos por mdi-bus e mdi-home-city."
+      }
+    ]
+  },
+  {
+    "id": "INS-0002",
+    "timestamp": "2026-01-26T04:36:15.163549",
+    "type": "decision",
+    "complexity": "low",
+    "status": "captured",
+    "idea": "Padrão de Navigation Rail: quando colapsada, a sidebar deve ter botão de expandir visível. O logo também pode ser clicável para expandir. Ícones MDI nem todos renderizam - preferir ícones comuns como mdi-airplane, mdi-bus, mdi-domain.",
+    "modules": [
+      "UI/UX",
+      "Sidebar",
+      "Navigation"
+    ],
+    "agents_consulted": [],
+    "analysis": {},
+    "decision": null,
+    "next_steps": [],
+    "project": "igo-journey",
+    "branch": "igoexp"
+  },
+  {
+    "id": "INS-0003",
+    "timestamp": "2026-01-26T05:23:41.544466",
+    "type": "feature",
+    "complexity": "medium",
+    "status": "implemented",
+    "idea": "Funcionalidade Editar Passageiro no Transfer: botão existe mas não funciona. Possíveis funções: 1) Trocar veículo/grupo, 2) Editar dados contato, 3) Marcar no-show, 4) Adicionar observações. Precisa análise de viabilidade e impacto operacional.",
+    "modules": [
+      "Transfer",
+      "API",
+      "Frontend"
+    ],
+    "agents_consulted": [],
+    "analysis": {},
+    "decision": null,
+    "next_steps": [],
+    "project": "igo-journey",
+    "branch": "igoexp",
+    "updated_at": "2026-01-26T05:39:42.770613",
+    "status_history": [
+      {
+        "from": "captured",
+        "to": "approved",
+        "timestamp": "2026-01-26T05:33:30.849036",
+        "notes": "Aprovado para implementação. Funções: trocar veículo, marcar no-show, observações, editar contato."
+      },
+      {
+        "from": "approved",
+        "to": "implemented",
+        "timestamp": "2026-01-26T05:39:42.770648",
+        "notes": "Funcionalidade implementada: 1) API transfer com controller e routes, 2) EditPassengerModal com trocar veículo/grupo, marcar no-show, observações, editar contato, 3) transferService no frontend, 4) Indicadores visuais de no-show no TransferGroups"
+      }
+    ]
+  },
+  {
+    "id": "INS-0004",
+    "timestamp": "2026-01-26T05:32:32.557154",
+    "type": "bug",
+    "complexity": "medium",
+    "status": "captured",
+    "idea": "Problema de Mixed Content HTTPS/HTTP causa erro de login silencioso - Frontend mostra 'credenciais inválidas' quando na verdade é erro de rede bloqueado pelo browser",
+    "modules": [
+      "Frontend",
+      "API",
+      "Autenticação"
+    ],
+    "agents_consulted": [],
+    "analysis": {},
+    "decision": null,
+    "next_steps": [],
+    "project": "igo-journey",
+    "branch": "igoexp"
+  },
+  {
+    "id": "INS-0005",
+    "timestamp": "2026-01-26T11:14:22.174968",
+    "type": "feature",
+    "complexity": "medium",
+    "status": "captured",
+    "idea": "Nome de grupo de transfer editável com fallback para nome padrão gerado. Formato: \"{IN|OUT} {Veículo} {dd/mm HH:mm}\". Permite flexibilidade quando necessário sem trabalho extra quando nome padrão é suficiente.",
+    "modules": [
+      "Transfer",
+      "API",
+      "Frontend"
+    ],
+    "agents_consulted": [],
+    "analysis": {},
+    "decision": null,
+    "next_steps": [],
+    "project": "igo-journey",
+    "branch": "igoexp"
+  }
+]

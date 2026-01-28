@@ -79,6 +79,28 @@ Você: "Criar endpoint de check-in"
 → Agente Backend
 ```
 
+### Quando Você Quer Entender/Validar LP → Agente Guardiao 🛡️
+
+**Palavras-chave:**
+- "Fluxo de LP...", "Como funciona o RSVP..."
+- "Componente ModuloFormulario...", "FormularioSistemaPadrao..."
+- "Validar lp_flow...", "Validar lp_formulario...", "Validar lp_conteudo..."
+- "Rastrear campo...", "Onde esse campo nasce..."
+- "Erro no LP...", "Bug no formulario..."
+
+**Exemplos:**
+
+```
+Você: "Explica o fluxo de RSVP da LP"
+→ Agente Guardiao explica o fluxo via lp-guardian
+
+Você: "Validar este lp_flow"
+→ Agente Guardiao valida a configuracao
+
+Você: "Rastrear o campo status_presenca"
+→ Agente Guardiao rastreia fluxo de dados
+```
+
 ---
 
 ## 🎨 Comandos Rápidos com Emojis
@@ -184,6 +206,7 @@ Use emojis para invocar rapidamente:
 | "Corrigir bug no..." | 🔧 Específico | Correção direta |
 | "Design de tela X" | 🎨 Design/UX | Criação de UI |
 | "Arquitetura de Y" | 🏗️ Arquiteto | Decisão arquitetural |
+| "Validar lp_flow" | 🛡️ Guardiao | Valida config e aponta erros |
 
 ---
 

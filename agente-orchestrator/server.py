@@ -15,11 +15,15 @@ from mcp.server.fastmcp import FastMCP
 mcp = FastMCP("agente-orchestrator")
 
 # Caminho base do projeto
-# Detectar se está rodando em Docker ou Windows local
+# Detectar se está rodando em Docker, Windows ou macOS local
 import sys
 if sys.platform == "win32":
     # Windows local
     PROJECT_ROOT = Path("c:/GIT-RAFAEL/mcp-servers")
+    DOCS_DIR = PROJECT_ROOT / "docs"
+elif sys.platform == "darwin":
+    # macOS local
+    PROJECT_ROOT = Path("/Users/rafamacpro/Projetos/GIT-RAFAEL/mcp-servers")
     DOCS_DIR = PROJECT_ROOT / "docs"
 else:
     # Docker (Linux)
@@ -30,14 +34,64 @@ AGENTES_DIR = DOCS_DIR / "agentes"
 MEMORIA_DIR = DOCS_DIR / "memoria"
 
 
+def _get_compact_agents_index() -> str:
+    """Índice compacto de agentes + parâmetros válidos dos MCPs."""
+    return """## Agentes
+- agente-arquiteto-igo: Arquitetura
+- agente-frontend-igo: Vue 3, Vuetify
+- agente-backend: .NET 9, APIs, SQL
+- agente-qa-testes: Testes
+- agente-rooming-list: Hospedagem
+- agente-transfer: Logística
+- agente-checkin: Check-in
+- agente-guardiao: Guardião LP (fluxos, componentes, configs)
+
+## MCPs - Parâmetros Válidos
+vuetify-uiux:
+  color_scheme: professional_blue|modern_purple|dark_mode
+  accessibility_guide: color_contrast|keyboard_navigation|screen_readers
+  layout_pattern: dashboard|form_page
+  design_tips: mobile|formulario|dashboard|tabela|cor
+  suggest_component: formulario|tabela|lista|card|modal|dashboard
+  component_info: v-text-field|v-select|v-data-table|v-btn|v-card|v-dialog
+
+api-database-tester:
+  database_type: sqlserver|postgresql
+  method: GET|POST|PUT|DELETE
+
+memory-manager:
+  status: completed|in_progress|pending|blocked
+
+agente-insights:
+  insight_type: feature|bug|improvement|decision
+  complexity: low|medium|high
+
+lp-guardian:
+  explain_flow: link_cripto|rsvp|chave|optin|cadastro_igo|upload
+  explain_component: ModuloFormulario|FormularioSistemaPadrao
+  get_store_structure: mainStore|formularioStore|colaboradorStore|eventoStore|adminStore
+  search_docs: query
+  suggest_fix: descricao_erro
+  trace_data_flow: campo
+  validate_config: lp_flow|lp_formulario|lp_conteudo"""
+
+
 @mcp.tool()
-def list_agents() -> str:
+def list_agents(compact: bool = False) -> str:
     """
-    Lista todos os agentes disponíveis e seus status.
+    Lista agentes disponíveis.
+
+    Args:
+        compact: Se True, retorna versão resumida (economia de tokens)
 
     Returns:
-        JSON string com lista de agentes
+        JSON com lista de agentes
     """
+    if compact:
+        return json.dumps({
+            "success": True,
+            "agents": _get_compact_agents_index()
+        }, indent=2, ensure_ascii=False)
     try:
         # Garantir que diretório de agentes existe (se o volume permitir escrita)
         read_only = False
@@ -104,6 +158,12 @@ def list_agents() -> str:
                 "type": "mcp",
                 "title": "Vuetify UI/UX Assistant",
                 "description": "Consultor de design Vuetify 3: componentes, layouts, cores e acessibilidade"
+            },
+            {
+                "name": "lp-guardian",
+                "type": "mcp",
+                "title": "LP Guardian",
+                "description": "Guardião do LP: fluxos, componentes, stores, validação de configs e troubleshooting"
             }
         ]
 
@@ -351,96 +411,44 @@ def ask_ai_to_decide(
     branch: str = "main"
 ) -> str:
     """
-    Usa IA (GPT-5.2) para decidir qual agente usar baseado na requisição do usuário.
+    Usa IA para decidir qual agente usar.
 
-    Esta é a funcionalidade "cérebro" do orchestrator - quando você não sabe qual
-    agente chamar, pergunte à IA!
-
-    IMPORTANTE: Esta tool prepara os dados e retorna instruções para Claude Code
-    chamar o igo-openai-gateway::decide_agent com reasoning.
+    OTIMIZADO: Envia índice compacto + parâmetros válidos dos MCPs.
 
     Args:
-        user_request: Requisição do usuário (pode ser ambígua ou complexa)
-        project: Nome do projeto (default: "default")
-        branch: Nome da branch (default: "main")
+        user_request: Requisição do usuário
+        project: Nome do projeto
+        branch: Nome da branch
 
     Returns:
-        JSON com dados preparados e próximos passos
-
-    Exemplo de uso:
-        ask_ai_to_decide(
-            user_request="Preciso melhorar a performance do rooming list",
-            project="igo-journey",
-            branch="main"
-        )
-
-        Resultado: Dados preparados para chamar igo-openai-gateway::decide_agent
+        JSON com params para igo-openai-gateway::decide_agent
     """
     try:
-        # 1. Coletar lista de agentes disponíveis
-        agents_result = list_agents()
-        agents_data = json.loads(agents_result)
+        # Índice compacto (economia de tokens)
+        agents_index = _get_compact_agents_index()
 
-        if not agents_data.get("success"):
-            return json.dumps({
-                "success": False,
-                "error": "Falha ao coletar lista de agentes",
-                "details": agents_data
-            })
-
-        # 2. Carregar contexto do projeto
+        # Contexto resumido (máx 500 chars)
         context = ""
         context_file = MEMORIA_DIR / project / branch / "contexto-atual.md"
+        if not context_file.exists():
+            context_file = MEMORIA_DIR / "contexto-atual.md"
+
         if context_file.exists():
             with open(context_file, 'r', encoding='utf-8') as f:
-                context = f.read()
-        else:
-            # Tentar contexto flat (backwards compatibility)
-            old_context_file = MEMORIA_DIR / "contexto-atual.md"
-            if old_context_file.exists():
-                with open(old_context_file, 'r', encoding='utf-8') as f:
-                    context = f.read()
+                full_context = f.read()
+                context = full_context[:500] + "..." if len(full_context) > 500 else full_context
 
-        # 3. Preparar dados para o gateway
-        gateway_input = {
-            "user_request": user_request,
-            "available_agents": json.dumps(agents_data, ensure_ascii=False),
-            "project_context": context,
-            "project": project,
-            "branch": branch
-        }
-
-        # 4. Retornar instruções e dados
         return json.dumps({
             "success": True,
-            "message": "Dados preparados para decisão de IA",
-            "next_step": {
-                "action": "call_gateway",
-                "mcp": "igo-openai-gateway",
-                "tool": "decide_agent",
-                "parameters": {
-                    "user_request": user_request,
-                    "available_agents": json.dumps(agents_data, ensure_ascii=False),
-                    "project_context": context,
-                    "reasoning_effort": "high"
-                }
+            "action": "call_gateway",
+            "tool": "decide_agent",
+            "params": {
+                "user_request": user_request,
+                "available_agents": agents_index,
+                "project_context": context,
+                "reasoning_effort": "medium"
             },
-            "instructions": """
-PRÓXIMO PASSO:
-Chame o MCP 'igo-openai-gateway' com a tool 'decide_agent' usando os parâmetros acima.
-
-A IA irá analisar a requisição e recomendar qual(is) agente(s) usar com explicação detalhada.
-
-Após receber a decisão, você pode:
-1. Invocar o agente recomendado usando invoke_agent()
-2. Ou usar run_agent() do igo-openai-gateway se preferir execução direta com GPT-5.2
-""",
-            "prepared_data": gateway_input,
-            "agents_available": {
-                "mcps": agents_data.get("mcps", []),
-                "agents": agents_data.get("agents", []),
-                "total": agents_data.get("count", 0)
-            }
+            "tip": "Use igo-openai-gateway::decide_agent com os params acima"
         }, indent=2, ensure_ascii=False)
 
     except Exception as e:

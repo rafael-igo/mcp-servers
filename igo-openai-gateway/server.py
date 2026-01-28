@@ -19,11 +19,15 @@ from openai import OpenAI
 
 mcp = FastMCP("igo-openai-gateway")
 
-# Detectar se está rodando em Docker ou Windows local
+# Detectar se está rodando em Docker, Windows ou macOS local
 import sys
 if sys.platform == "win32":
     # Windows local
     PROJECT_ROOT = Path("c:/GIT-RAFAEL/mcp-servers")
+    DOCS_DIR = PROJECT_ROOT / "docs"
+elif sys.platform == "darwin":
+    # macOS local
+    PROJECT_ROOT = Path("/Users/rafamacpro/Projetos/GIT-RAFAEL/mcp-servers")
     DOCS_DIR = PROJECT_ROOT / "docs"
 else:
     # Docker (Linux)
@@ -73,6 +77,22 @@ def _load_context() -> str:
     context_file = MEMORIA_DIR / "contexto-atual.md"
     if context_file.exists():
         return context_file.read_text(encoding="utf-8")
+    return ""
+
+
+def _load_mcp_reference() -> str:
+    """Carrega referência completa dos MCPs."""
+    ref_file = DOCS_DIR / "MCP-REFERENCE.md"
+    if ref_file.exists():
+        return ref_file.read_text(encoding="utf-8")
+    return ""
+
+
+def _load_agents_index() -> str:
+    """Carrega índice completo dos agentes."""
+    index_file = AGENTES_DIR / "AGENTES-INDEX.md"
+    if index_file.exists():
+        return index_file.read_text(encoding="utf-8")
     return ""
 
 
@@ -571,6 +591,58 @@ Analise e decida qual(is) agente(s) usar."""
             ensure_ascii=False,
             indent=2,
         )
+
+
+@mcp.tool()
+def get_mcp_reference() -> str:
+    """
+    Retorna referência completa de todos os MCPs disponíveis.
+
+    Inclui: todas as tools, parâmetros válidos e exemplos de uso.
+    Use quando precisar de informações detalhadas sobre um MCP.
+
+    Returns:
+        Conteúdo do MCP-REFERENCE.md
+    """
+    try:
+        content = _load_mcp_reference()
+        if content:
+            return json.dumps({
+                "success": True,
+                "content": content
+            }, ensure_ascii=False)
+        return json.dumps({
+            "success": False,
+            "error": "MCP-REFERENCE.md não encontrado"
+        })
+    except Exception as exc:
+        return json.dumps({"success": False, "error": str(exc)})
+
+
+@mcp.tool()
+def get_agents_index() -> str:
+    """
+    Retorna índice completo de todos os agentes disponíveis.
+
+    Inclui: categorias, responsabilidades, parâmetros e stack técnica.
+    Use quando precisar saber qual agente chamar.
+
+    Returns:
+        Conteúdo do AGENTES-INDEX.md
+    """
+    try:
+        content = _load_agents_index()
+        if content:
+            return json.dumps({
+                "success": True,
+                "content": content
+            }, ensure_ascii=False)
+        return json.dumps({
+            "success": False,
+            "error": "AGENTES-INDEX.md não encontrado"
+        })
+    except Exception as exc:
+        return json.dumps({"success": False, "error": str(exc)})
 
 
 def main() -> None:

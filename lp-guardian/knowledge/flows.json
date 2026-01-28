@@ -1,0 +1,189 @@
+{
+  "link_cripto": {
+    "descricao": "Fluxo de entrada via link criptografado com parâmetros de identificação",
+    "diagrama": "URL /{codigo}?id=...&w!=...&y!=... → LandingPageDinamica.vue → verificaUrl(route) → EComLinkCrypto() → ativarFormularios() → [cadastroIgo OU fnVerificaPresenca]",
+    "arquivos": [
+      "src/Funcoes/VerificaURL.js",
+      "src/Funcoes/verificaPresencaFn.js",
+      "src/components/LandingPageDinamica.vue"
+    ],
+    "regras": [
+      "params.codigo deve existir na rota",
+      "query.id é obrigatório",
+      "query.w! é obrigatório",
+      "query.y! é obrigatório",
+      "query.l! é opcional"
+    ],
+    "exemplo": "/NTAtdHNi?id=123&w!=abc&y!=def&lp=true",
+    "relacionados": ["cadastro_igo", "rsvp"]
+  },
+  "cadastro_igo": {
+    "descricao": "Redirecionamento para sistema IGO externo quando evento_cadastroIgo=true",
+    "diagrama": "Link Cripto detectado → evento_cadastroIgo=true → mainStore.cadastroIgo=true → Botão redireciona → siteCadastroIGO + queries",
+    "arquivos": [
+      "src/Funcoes/VerificaURL.js",
+      "src/components/ModulosDinamicos/ModuloSobre.vue",
+      "src/components/ModulosDinamicos/ModuloCabecalho.vue"
+    ],
+    "regras": [
+      "evento_cadastroIgo deve ser true nos controles",
+      "siteCadastroIGO deve estar configurado (https://{hotsite}.igorsvp.com.br)",
+      "NÃO incluir código da rota no redirect, apenas queries",
+      "Adicionar &lp=true ao final da URL"
+    ],
+    "exemplo": "https://hotsite.igorsvp.com.br?id=123&w!=abc&y!=def&lp=true",
+    "relacionados": ["link_cripto"]
+  },
+  "rsvp": {
+    "descricao": "Fluxo RSVP completo com busca de PAX e processamento de status",
+    "diagrama": "Link Cripto + evento_rsvp_lp=true → fnVerificaPresenca() → API /verificapresenca → VerifcaStatusPadrao() → FlowResolver.resolve() → ActionExecutor.execute()",
+    "arquivos": [
+      "src/Funcoes/verificaPresencaFn.js",
+      "src/flow/core/FlowResolver.js",
+      "src/flow/core/ActionExecutor.js",
+      "src/flow/rsvpFlowResolver_V2.js"
+    ],
+    "regras": [
+      "evento_rsvp_lp deve ser true nos controles",
+      "Hierarquia de resolução: runtime_rules > status_rules > condicoes_fluxo > fallback",
+      "Status válidos: PENDENTE, CONFIRMADO, INSCRITO, EM ANALISE, CANCELADO, PRAZO VENCIDO",
+      "FlowResolver é puro (sem side effects), ActionExecutor executa ações"
+    ],
+    "exemplo": "PAX com status CONFIRMADO → FlowResolver retorna mensagem → ActionExecutor exibe dialog",
+    "relacionados": ["link_cripto", "status_rules", "runtime_rules"]
+  },
+  "chave": {
+    "descricao": "Fluxo de entrada via chave/voucher com pesquisa de CPF/email",
+    "diagrama": "URL ?chave= → evento_chave=true → runtime.funcao_chave='nao_encontrada' → FlowResolver procura runtime_rule → [pesquisa_cpf_email OU chave_unica]",
+    "arquivos": [
+      "src/Funcoes/VerificaURL.js",
+      "src/flow/core/FlowResolver.js",
+      "src/flow/core/ActionExecutor.js",
+      "src/Formularios/formComponenteChave.vue",
+      "src/Formularios/FormularioChaveUnica.vue"
+    ],
+    "regras": [
+      "evento_chave deve ser true nos controles",
+      "runtime_rule deve existir com chave='funcao_chave' e valor='nao_encontrada'",
+      "pesquisa_cpf_email: 3 tentativas, depois abre form_id",
+      "chave_unica: busca direta, se encontrar abre form_id, senão mostra mensagem"
+    ],
+    "exemplo": "runtime_rule { chave: 'funcao_chave', valor: 'nao_encontrada', acao: { tipo: 'pesquisa_cpf_email', form_id: 'optin' } }",
+    "relacionados": ["runtime_rules", "pesquisa_cpf_email", "chave_unica"]
+  },
+  "optin": {
+    "descricao": "Fluxo de inscrição direta via query params (optin, redesocial, virtual)",
+    "diagrama": "URL ?optin=true → mainStore.runtime.modo_entrada='optin' → FlowResolver → form_id do mapa_formularios.optin",
+    "arquivos": [
+      "src/Funcoes/VerificaURL.js",
+      "src/flow/core/FlowResolver.js",
+      "src/flow/rsvpFlowResolver_V2.js"
+    ],
+    "regras": [
+      "evento_optin deve ser true nos controles",
+      "Params aceitos: optin, redesocial, virtual",
+      "Se fechaLink=true, bloqueia com mensagem",
+      "Form_id vem de mapa_formularios.optin ou fallback 'principal'"
+    ],
+    "exemplo": "?optin=true → abre formulário de optin",
+    "relacionados": ["runtime_rules"]
+  },
+  "upload": {
+    "descricao": "Fluxo de upload de documentos (passaporte, CNH, etc)",
+    "diagrama": "UploadProcessor.processar() → UploadRules.precisaUpload() → marca campos como PENDENTE_ARQUIVO → UI exibe UploadFiles.vue",
+    "arquivos": [
+      "src/flow/processors/UploadProcessor.js",
+      "src/flow/rules/UploadRules.js",
+      "src/components/uploads/UploadFiles.vue"
+    ],
+    "regras": [
+      "Upload baseado em lp_modulos.upload config",
+      "Campos: upload1-5 (restritos, nunca sobrescrever)",
+      "Status: PENDENTE_ARQUIVO, ARQUIVO_RECEBIDO, ARQUIVO_APROVADO, ARQUIVO_REJEITADO",
+      "Verifica pais, status_aereo, socio para decidir se precisa upload"
+    ],
+    "exemplo": "PAX com pais != 'BRASIL' e socio = 'AÉREO' → precisa upload de passaporte",
+    "relacionados": ["rsvp"]
+  },
+  "status_rules": {
+    "descricao": "Regras de ação baseadas no status_presenca do PAX",
+    "diagrama": "FlowResolver.evaluateStatusRules() → Para cada regra: match.fonte=pax, match.chave=status_presenca, match.operador → Se match, retorna acao",
+    "arquivos": [
+      "src/flow/core/FlowResolver.js",
+      "src/flow/rsvpFlowResolver_V2.js"
+    ],
+    "regras": [
+      "Array em lpFlow.status_rules",
+      "Cada regra tem: nome, match (fonte, chave, operador, valor), acao",
+      "Operadores: igual, contem, em, vazio, preenchido, maior, menor, etc",
+      "Ações: abrir_form, mensagem, abrir_upload, verificar_acompanhante"
+    ],
+    "exemplo": "{ nome: 'confirmado', match: { fonte: 'pax', chave: 'status_presenca', operador: 'contem', valor: 'CONFIRMADO' }, acao: { tipo: 'mensagem', titulo: '...' } }",
+    "relacionados": ["rsvp", "runtime_rules"]
+  },
+  "runtime_rules": {
+    "descricao": "Regras de ação baseadas no contexto de runtime (modo_entrada, funcao_chave)",
+    "diagrama": "FlowResolver.evaluateRuntimeRules() → Para cada regra: chave no runtime, valor esperado → Se match, retorna acao",
+    "arquivos": [
+      "src/flow/core/FlowResolver.js",
+      "src/flow/rsvpFlowResolver_V2.js"
+    ],
+    "regras": [
+      "Array em lpFlow.runtime_rules",
+      "Cada regra tem: chave, valor, acao",
+      "Prioridade MÁXIMA (antes de status_rules)",
+      "Chaves comuns: modo_entrada, funcao_chave"
+    ],
+    "exemplo": "{ chave: 'funcao_chave', valor: 'nao_encontrada', acao: { tipo: 'pesquisa_cpf_email', form_id: 'optin' } }",
+    "relacionados": ["chave", "optin"]
+  },
+  "mensagens": {
+    "descricao": "Sistema de mensagens dinâmicas com hierarquia de prioridade",
+    "diagrama": "getMensagemDoFlow(tipo) → 1. Admin Editor → 2. Runtime → 3. campo_tipo_5 → 4. Fallback",
+    "arquivos": [
+      "src/Funcoes/verificaPresencaFn.js",
+      "src/components/ModulosDinamicos/utils/preset-helpers.js"
+    ],
+    "regras": [
+      "Hierarquia: Admin > Runtime > campo_tipo_5 > Hardcoded",
+      "Tipos: confirmado, cancelado, pendente, analise, prazo_vencido",
+      "Formato: string simples OU objeto { titulo, texto, texto2, classe, qrcode }",
+      "Suporta placeholders: <<pax_nome>>, <<evento_nome_evento>>"
+    ],
+    "exemplo": "lpFlow.mensagens.confirmado = { titulo: 'Confirmado!', texto: 'Olá <<pax_nome>>' }",
+    "relacionados": ["rsvp", "presets"]
+  },
+  "submit": {
+    "descricao": "Fluxo de submissão de formulário com proteção anti-conflito",
+    "diagrama": "submit() → submitting=true → Bloqueia watchers → POST /updatePaxEvento → Resposta → Atualiza pax → submitting=false → Watchers executam",
+    "arquivos": [
+      "src/stores/formularioStore.js",
+      "docs/SUBMIT-ROBUSTO.md"
+    ],
+    "regras": [
+      "Flag submitting DEVE bloquear watchers e botões",
+      "Processar acao_submit.comparadores antes de enviar",
+      "Aplicar acao_submit.transicoes no payload",
+      "Converter datas ISO → BR antes de enviar",
+      "Limpar pesquisaCpfEmailConfig após sucesso"
+    ],
+    "exemplo": "if (this.submitting) return; this.submitting = true; try { await POST } finally { this.submitting = false; }",
+    "relacionados": ["rsvp", "acao_submit"]
+  },
+  "acao_submit": {
+    "descricao": "Transições e comparadores aplicados no submit quando chave não encontrada",
+    "diagrama": "submit() → isOptinRuntime? → Validar comparadores → Aplicar transicoes ao pax → Enviar",
+    "arquivos": [
+      "src/stores/formularioStore.js",
+      "src/flow/core/ActionExecutor.js"
+    ],
+    "regras": [
+      "Configurado em runtime_rule.acao.acao_submit",
+      "Comparadores validam antes de enviar (igual, contem, em, vazio, preenchido)",
+      "Transicoes sobrescrevem campos (tabela: 'pax', campo: 'status_presenca', valor: 'EM ANALISE')",
+      "Se comparador falha, submit é bloqueado"
+    ],
+    "exemplo": "acao_submit: { transicoes: [{ tabela: 'pax', campo: 'status_presenca', valor: 'EM ANALISE' }] }",
+    "relacionados": ["submit", "chave"]
+  }
+}

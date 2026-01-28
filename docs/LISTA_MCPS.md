@@ -1,7 +1,7 @@
 # Lista Completa de MCPs - I GO Experience
 
 **Última Atualização:** 2026-01-26
-**Total de MCPs:** 11
+**Total de MCPs:** 12
 
 ## 📋 Visão Geral
 
@@ -66,8 +66,9 @@ Este projeto possui **11 MCPs** (Model Context Protocol servers) que fornecem fe
 - checklist-validator
 - docker-admin
 - vuetify-uiux
+- lp-guardian
 
-**Agentes Especializados (17):**
+**Agentes Especializados (18):**
 - agente-rooming-list, agente-transfer, agente-checkin
 - agente-backend, agente-tracking, agente-credenciamento
 - agente-rsvp, agente-arquiteto-igo, agente-frontend-igo
@@ -75,6 +76,7 @@ Este projeto possui **11 MCPs** (Model Context Protocol servers) que fornecem fe
 - agente-comercial-igo, agente-marketing-igo
 - agente-diretoria-igo, agente-operacao-igo
 - agente-solucoes, agente-analytics-kpi
+- agente-guardiao
 
 ---
 
@@ -377,7 +379,32 @@ docs/resumo/
 
 ---
 
-### 11. igo-memory (Original) - LEGADO
+### 11. lp-guardian 🟢 LOCAL
+**Modo:** Python local (Windows)
+**Diretório:** `mcp-servers/lp-guardian/`
+**Comando:** `python c:/GIT-RAFAEL/mcp-servers/lp-guardian/server.py`
+
+**Descrição:** Guardião do LP - fluxos, componentes, stores e validação de configs.
+
+**Ferramentas (8):**
+- `explain_flow(nome_fluxo)` - Explica fluxos (rsvp, optin, chave, upload, cadastro_igo)
+- `explain_component(nome_componente)` - Detalha componentes Vue específicos
+- `get_store_structure(nome_store)` - Estrutura completa da store Pinia
+- `search_docs(query, limite?)` - Busca na documentação
+- `suggest_fix(descricao_erro)` - Sugere correção para erro comum
+- `trace_data_flow(campo)` - Rastreia fluxo de dados do campo
+- `validate_config(config_json, tipo_config?)` - Valida configs de LP
+- `check_compatibility(versao_flow)` - Compatibilidade do flow RSVP
+
+**Casos de Uso:**
+- Entender rapidamente fluxos de LP
+- Validar JSON de LP (flow/formulario/conteudo)
+- Diagnosticar erros de runtime/estado
+- Rastrear campos em stores e formulários
+
+---
+
+### 12. igo-memory (Original) - LEGADO
 **Container:** `igo-memory-server-mcp-server-1`
 **Status:** Legado - existia antes, mantido por compatibilidade
 
@@ -432,6 +459,7 @@ Use memory-manager para configurar contexto igo-journey/main
 Use agente-insights para capturar insight sobre nova feature
 Use agente-resumo para gerar relatório executivo
 Use vuetify-uiux para sugerir componentes de formulário
+Use lp-guardian para validar configs e explicar fluxos de LP
 
 # MCPs Docker (quando necessário)
 Use docker-admin para verificar saúde dos containers
