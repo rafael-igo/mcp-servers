@@ -1,7 +1,26 @@
 {
+  "arquitetura": {
+    "descricao": "Visao geral do funcionamento da LP e do Flow RSVP",
+    "diagrama": "URL -> VerificaURL.js -> mainStore (lp_* + runtime) -> FlowResolver -> ActionExecutor -> UI (Formulario/Modulo/Mensagem)",
+    "arquivos": [
+      "src/components/LandingPageDinamica.vue",
+      "src/Funcoes/VerificaURL.js",
+      "src/stores/mainStore.pinia.js",
+      "src/flow/core/FlowResolver.js",
+      "src/flow/core/ActionExecutor.js",
+      "src/flow/rsvpFlowResolver_V2.js"
+    ],
+    "regras": [
+      "verificaUrl deve ser chamado apenas em LandingPageDinamica",
+      "runtime_rules tem prioridade maxima",
+      "ActionExecutor executa acao retornada pelo FlowResolver"
+    ],
+    "exemplo": "Link cripto -> verificaUrl -> fnVerificaPresenca -> FlowResolver -> ActionExecutor -> mensagem",
+    "relacionados": ["link_cripto", "rsvp", "modulos_dinamicos", "submit"]
+  },
   "link_cripto": {
-    "descricao": "Fluxo de entrada via link criptografado com parâmetros de identificação",
-    "diagrama": "URL /{codigo}?id=...&w!=...&y!=... → LandingPageDinamica.vue → verificaUrl(route) → EComLinkCrypto() → ativarFormularios() → [cadastroIgo OU fnVerificaPresenca]",
+    "descricao": "Entrada via link criptografado com parametros de identificacao",
+    "diagrama": "/{codigo}?id=...&w!=...&y!=... -> LandingPageDinamica -> verificaUrl -> EComLinkCrypto -> ativarFormularios",
     "arquivos": [
       "src/Funcoes/VerificaURL.js",
       "src/Funcoes/verificaPresencaFn.js",
@@ -9,17 +28,15 @@
     ],
     "regras": [
       "params.codigo deve existir na rota",
-      "query.id é obrigatório",
-      "query.w! é obrigatório",
-      "query.y! é obrigatório",
-      "query.l! é opcional"
+      "query.id, query.w!, query.y! sao obrigatorios",
+      "query.l! e opcional"
     ],
     "exemplo": "/NTAtdHNi?id=123&w!=abc&y!=def&lp=true",
-    "relacionados": ["cadastro_igo", "rsvp"]
+    "relacionados": ["cadastro_igo", "rsvp", "optin"]
   },
   "cadastro_igo": {
     "descricao": "Redirecionamento para sistema IGO externo quando evento_cadastroIgo=true",
-    "diagrama": "Link Cripto detectado → evento_cadastroIgo=true → mainStore.cadastroIgo=true → Botão redireciona → siteCadastroIGO + queries",
+    "diagrama": "Link cripto detectado -> evento_cadastroIgo=true -> mainStore.cadastroIgo=true -> botao redireciona",
     "arquivos": [
       "src/Funcoes/VerificaURL.js",
       "src/components/ModulosDinamicos/ModuloSobre.vue",
@@ -27,16 +44,16 @@
     ],
     "regras": [
       "evento_cadastroIgo deve ser true nos controles",
-      "siteCadastroIGO deve estar configurado (https://{hotsite}.igorsvp.com.br)",
-      "NÃO incluir código da rota no redirect, apenas queries",
-      "Adicionar &lp=true ao final da URL"
+      "siteCadastroIGO deve estar configurado",
+      "nao incluir codigo da rota no redirect, apenas query",
+      "adicionar &lp=true ao final da URL"
     ],
     "exemplo": "https://hotsite.igorsvp.com.br?id=123&w!=abc&y!=def&lp=true",
     "relacionados": ["link_cripto"]
   },
   "rsvp": {
     "descricao": "Fluxo RSVP completo com busca de PAX e processamento de status",
-    "diagrama": "Link Cripto + evento_rsvp_lp=true → fnVerificaPresenca() → API /verificapresenca → VerifcaStatusPadrao() → FlowResolver.resolve() → ActionExecutor.execute()",
+    "diagrama": "Link Cripto + evento_rsvp_lp=true -> fnVerificaPresenca -> /verificapresenca -> VerifcaStatusPadrao -> FlowResolver -> ActionExecutor",
     "arquivos": [
       "src/Funcoes/verificaPresencaFn.js",
       "src/flow/core/FlowResolver.js",
@@ -45,20 +62,36 @@
     ],
     "regras": [
       "evento_rsvp_lp deve ser true nos controles",
-      "Hierarquia de resolução: runtime_rules > status_rules > condicoes_fluxo > fallback",
-      "Status válidos: PENDENTE, CONFIRMADO, INSCRITO, EM ANALISE, CANCELADO, PRAZO VENCIDO",
-      "FlowResolver é puro (sem side effects), ActionExecutor executa ações"
+      "Prioridade: runtime_rules > status_rules > condicoes_fluxo > fallback",
+      "FlowResolver e puro, ActionExecutor executa acao",
+      "mensagens seguem hierarquia definida em textos dinamicos"
     ],
-    "exemplo": "PAX com status CONFIRMADO → FlowResolver retorna mensagem → ActionExecutor exibe dialog",
-    "relacionados": ["link_cripto", "status_rules", "runtime_rules"]
+    "exemplo": "PAX CONFIRMADO -> FlowResolver retorna mensagem -> ActionExecutor exibe dialog",
+    "relacionados": ["link_cripto", "status_rules", "runtime_rules", "mensagens"]
   },
-  "chave": {
-    "descricao": "Fluxo de entrada via chave/voucher com pesquisa de CPF/email",
-    "diagrama": "URL ?chave= → evento_chave=true → runtime.funcao_chave='nao_encontrada' → FlowResolver procura runtime_rule → [pesquisa_cpf_email OU chave_unica]",
+  "flow_rsvp_v2": {
+    "descricao": "Camada V2 do Flow RSVP com modulos refatorados",
+    "diagrama": "rsvpFlowResolver_V2 -> FlowResolver/ActionExecutor/ConditionEvaluator",
     "arquivos": [
-      "src/Funcoes/VerificaURL.js",
+      "src/flow/rsvpFlowResolver_V2.js",
       "src/flow/core/FlowResolver.js",
       "src/flow/core/ActionExecutor.js",
+      "src/flow/core/ConditionEvaluator.js"
+    ],
+    "regras": [
+      "Mantem compatibilidade com V1",
+      "Normaliza acoes e mensagens",
+      "Valida acoes permitidas em modo chave"
+    ],
+    "exemplo": "runtime.modo_entrada='chave' -> permite apenas chave_unica ou pesquisa_cpf_email",
+    "relacionados": ["rsvp", "runtime_rules", "chave"]
+  },
+  "chave": {
+    "descricao": "Entrada via chave/voucher com pesquisa de CPF/email",
+    "diagrama": "URL ?chave= -> evento_chave=true -> runtime.funcao_chave='nao_encontrada' -> runtime_rules -> pesquisa_cpf_email OU chave_unica",
+    "arquivos": [
+      "src/Funcoes/VerificaURL.js",
+      "src/flow/rsvpFlowResolver_V2.js",
       "src/Formularios/formComponenteChave.vue",
       "src/Formularios/FormularioChaveUnica.vue"
     ],
@@ -66,124 +99,261 @@
       "evento_chave deve ser true nos controles",
       "runtime_rule deve existir com chave='funcao_chave' e valor='nao_encontrada'",
       "pesquisa_cpf_email: 3 tentativas, depois abre form_id",
-      "chave_unica: busca direta, se encontrar abre form_id, senão mostra mensagem"
+      "chave_unica: busca direta e abre form_id"
     ],
     "exemplo": "runtime_rule { chave: 'funcao_chave', valor: 'nao_encontrada', acao: { tipo: 'pesquisa_cpf_email', form_id: 'optin' } }",
     "relacionados": ["runtime_rules", "pesquisa_cpf_email", "chave_unica"]
   },
+  "pesquisa_cpf_email": {
+    "descricao": "Acao de runtime que abre pesquisa por CPF/email",
+    "diagrama": "runtime_rule -> ActionExecutor -> formComponenteChave -> submit -> atualizar pax",
+    "arquivos": [
+      "src/Formularios/formComponenteChave.vue",
+      "src/stores/formularioStore.js"
+    ],
+    "regras": [
+      "3 tentativas antes de cair no form_id fallback",
+      "usa mainStore.pesquisaCpfEmailConfig"
+    ],
+    "exemplo": "acao.tipo='pesquisa_cpf_email' com form_id_fallback",
+    "relacionados": ["chave", "runtime_rules"]
+  },
+  "chave_unica": {
+    "descricao": "Acao de runtime que abre formulario de chave unica",
+    "diagrama": "runtime_rule -> ActionExecutor -> FormularioChaveUnica -> identificar",
+    "arquivos": [
+      "src/Formularios/FormularioChaveUnica.vue",
+      "src/stores/mainStore.pinia.js"
+    ],
+    "regras": [
+      "usa mainStore.chaveUnicaConfig (tipo_chave, form_id_encontrado, mensagem_nao_encontrado)"
+    ],
+    "exemplo": "acao.tipo='chave_unica'",
+    "relacionados": ["chave", "runtime_rules"]
+  },
   "optin": {
-    "descricao": "Fluxo de inscrição direta via query params (optin, redesocial, virtual)",
-    "diagrama": "URL ?optin=true → mainStore.runtime.modo_entrada='optin' → FlowResolver → form_id do mapa_formularios.optin",
+    "descricao": "Inscricao direta via query params (optin, redesocial, virtual)",
+    "diagrama": "URL ?optin=true -> runtime.modo_entrada='optin' -> FlowResolver -> form_id mapa_formularios.optin",
     "arquivos": [
       "src/Funcoes/VerificaURL.js",
-      "src/flow/core/FlowResolver.js",
       "src/flow/rsvpFlowResolver_V2.js"
     ],
     "regras": [
-      "evento_optin deve ser true nos controles",
+      "evento_optin deve ser true",
       "Params aceitos: optin, redesocial, virtual",
       "Se fechaLink=true, bloqueia com mensagem",
-      "Form_id vem de mapa_formularios.optin ou fallback 'principal'"
+      "Form_id vem de mapa_formularios.optin ou fallback principal"
     ],
-    "exemplo": "?optin=true → abre formulário de optin",
+    "exemplo": "?optin=true -> abre formulario optin",
     "relacionados": ["runtime_rules"]
   },
   "upload": {
     "descricao": "Fluxo de upload de documentos (passaporte, CNH, etc)",
-    "diagrama": "UploadProcessor.processar() → UploadRules.precisaUpload() → marca campos como PENDENTE_ARQUIVO → UI exibe UploadFiles.vue",
+    "diagrama": "UploadProcessor.processar -> UploadRules.precisaUpload -> marca campos -> UploadFiles",
     "arquivos": [
       "src/flow/processors/UploadProcessor.js",
       "src/flow/rules/UploadRules.js",
       "src/components/uploads/UploadFiles.vue"
     ],
     "regras": [
-      "Upload baseado em lp_modulos.upload config",
-      "Campos: upload1-5 (restritos, nunca sobrescrever)",
-      "Status: PENDENTE_ARQUIVO, ARQUIVO_RECEBIDO, ARQUIVO_APROVADO, ARQUIVO_REJEITADO",
-      "Verifica pais, status_aereo, socio para decidir se precisa upload"
+      "Upload baseado em lp_modulos.upload",
+      "Campos: upload1-5 (restritos)",
+      "Status: PENDENTE_ARQUIVO, ARQUIVO_RECEBIDO, ARQUIVO_APROVADO, ARQUIVO_REJEITADO"
     ],
-    "exemplo": "PAX com pais != 'BRASIL' e socio = 'AÉREO' → precisa upload de passaporte",
+    "exemplo": "pais != 'BRASIL' e socio = 'AEREO' -> precisa upload",
     "relacionados": ["rsvp"]
   },
   "status_rules": {
-    "descricao": "Regras de ação baseadas no status_presenca do PAX",
-    "diagrama": "FlowResolver.evaluateStatusRules() → Para cada regra: match.fonte=pax, match.chave=status_presenca, match.operador → Se match, retorna acao",
+    "descricao": "Regras por status_presenca do PAX",
+    "diagrama": "FlowResolver.evaluateStatusRules -> match pax.status_presenca -> retorna acao",
     "arquivos": [
       "src/flow/core/FlowResolver.js",
       "src/flow/rsvpFlowResolver_V2.js"
     ],
     "regras": [
       "Array em lpFlow.status_rules",
-      "Cada regra tem: nome, match (fonte, chave, operador, valor), acao",
-      "Operadores: igual, contem, em, vazio, preenchido, maior, menor, etc",
-      "Ações: abrir_form, mensagem, abrir_upload, verificar_acompanhante"
+      "Cada regra: nome, match (fonte, chave, operador, valor), acao",
+      "Acoes: abrir_form, mensagem, abrir_upload, verificar_acompanhante"
     ],
-    "exemplo": "{ nome: 'confirmado', match: { fonte: 'pax', chave: 'status_presenca', operador: 'contem', valor: 'CONFIRMADO' }, acao: { tipo: 'mensagem', titulo: '...' } }",
+    "exemplo": "match status_presenca contem CONFIRMADO -> acao mensagem",
     "relacionados": ["rsvp", "runtime_rules"]
   },
   "runtime_rules": {
-    "descricao": "Regras de ação baseadas no contexto de runtime (modo_entrada, funcao_chave)",
-    "diagrama": "FlowResolver.evaluateRuntimeRules() → Para cada regra: chave no runtime, valor esperado → Se match, retorna acao",
+    "descricao": "Regras baseadas no contexto de runtime",
+    "diagrama": "FlowResolver.evaluateRuntimeRules -> chave/valor -> retorna acao",
     "arquivos": [
       "src/flow/core/FlowResolver.js",
       "src/flow/rsvpFlowResolver_V2.js"
     ],
     "regras": [
       "Array em lpFlow.runtime_rules",
-      "Cada regra tem: chave, valor, acao",
-      "Prioridade MÁXIMA (antes de status_rules)",
+      "Prioridade maxima",
       "Chaves comuns: modo_entrada, funcao_chave"
     ],
-    "exemplo": "{ chave: 'funcao_chave', valor: 'nao_encontrada', acao: { tipo: 'pesquisa_cpf_email', form_id: 'optin' } }",
+    "exemplo": "{ chave: 'funcao_chave', valor: 'nao_encontrada', acao: { tipo: 'pesquisa_cpf_email' } }",
     "relacionados": ["chave", "optin"]
   },
   "mensagens": {
-    "descricao": "Sistema de mensagens dinâmicas com hierarquia de prioridade",
-    "diagrama": "getMensagemDoFlow(tipo) → 1. Admin Editor → 2. Runtime → 3. campo_tipo_5 → 4. Fallback",
+    "descricao": "Sistema de mensagens dinamicas com hierarquia de prioridade",
+    "diagrama": "getMensagemDoFlow(tipo) -> Admin -> Runtime -> campo_tipo_5 -> lpFlow -> fallback",
     "arquivos": [
       "src/Funcoes/verificaPresencaFn.js",
-      "src/components/ModulosDinamicos/utils/preset-helpers.js"
+      "src/components/ModulosDinamicos/utils/preset-helpers.js",
+      "docs/ARQUITETURA-TEXTOS-DINAMICOS.md"
     ],
     "regras": [
-      "Hierarquia: Admin > Runtime > campo_tipo_5 > Hardcoded",
+      "Hierarquia: Admin > Runtime > campo_tipo_5 > lpFlow > fallback",
       "Tipos: confirmado, cancelado, pendente, analise, prazo_vencido",
-      "Formato: string simples OU objeto { titulo, texto, texto2, classe, qrcode }",
-      "Suporta placeholders: <<pax_nome>>, <<evento_nome_evento>>"
+      "Suporta placeholders e condicionais"
     ],
-    "exemplo": "lpFlow.mensagens.confirmado = { titulo: 'Confirmado!', texto: 'Olá <<pax_nome>>' }",
-    "relacionados": ["rsvp", "presets"]
+    "exemplo": "lpFlow.mensagens.confirmado = { titulo: 'Confirmado', texto: 'Ola <<pax_nome>>' }",
+    "relacionados": ["textos_dinamicos", "presets_dinamicos"]
+  },
+  "textos_dinamicos": {
+    "descricao": "Processamento de textos com placeholders e condicionais",
+    "diagrama": "processarMesclaCondicional -> aplica placeholders e condicoes",
+    "arquivos": [
+      "src/components/ModulosDinamicos/utils/mescla-condicional.js",
+      "src/components/ModulosDinamicos/utils/placeholderHelpers.js"
+    ],
+    "regras": [
+      "Placeholder: <<tabela_campo>>",
+      "Condicional: {{#if}}...{{/if}}",
+      "Suporta default: <<campo|default:valor>>"
+    ],
+    "exemplo": "Ola <<pax_nome|default:Convidado>>",
+    "relacionados": ["presets_dinamicos", "mensagens"]
+  },
+  "presets_dinamicos": {
+    "descricao": "Sistema de presets para mensagens e cards",
+    "diagrama": "preset-helpers aplica presets por prioridade",
+    "arquivos": [
+      "src/components/ModulosDinamicos/utils/preset-helpers.js",
+      "docs/ARQUITETURA-TEXTOS-DINAMICOS.md"
+    ],
+    "regras": [
+      "Prioridade: Admin Editor > Runtime > campo_tipo_5 > defaults",
+      "Preset pode ter dialog e card inline"
+    ],
+    "exemplo": "titulo_card, subtitulo_card, mensagem_final",
+    "relacionados": ["mensagens"]
+  },
+  "mescla_condicional": {
+    "descricao": "Mescla de placeholders e condicionais em textos",
+    "diagrama": "mescla-condicional.js avalia operadores e substitui valores",
+    "arquivos": [
+      "src/components/ModulosDinamicos/utils/mescla-condicional.js",
+      "docs/step-by-step/MESCLA_CONDICIONAL_IMPLEMENTACAO.md"
+    ],
+    "regras": [
+      "Operadores: ==, !=, ~=, !~, >, <, >=, <=, !!, !",
+      "Contexto via condicoesNomeadas"
+    ],
+    "exemplo": "{{#if pax.status_presenca == 'CONFIRMADO'}}Confirmado{{/if}}",
+    "relacionados": ["textos_dinamicos"]
+  },
+  "modulos_dinamicos": {
+    "descricao": "Sistema modular da LP baseado em lp_conteudo",
+    "diagrama": "LandingPageDinamica -> RenderModulos -> Modulo*.vue",
+    "arquivos": [
+      "src/components/ModulosDinamicos/RenderModulos.vue",
+      "src/components/ModulosDinamicos/ModuloCabecalho.vue",
+      "src/components/ModulosDinamicos/ModuloFormulario.vue",
+      "src/components/ModulosDinamicos/ModuloFooter.vue"
+    ],
+    "regras": [
+      "lp_conteudo possui idiomas e modulos",
+      "cabecalho e footer sao tratados separadamente",
+      "modulo.ativo=false nao renderiza"
+    ],
+    "exemplo": "modulos: [{ tipo: 'formulario', ativo: true }]",
+    "relacionados": ["lp_conteudo"]
+  },
+  "lp_conteudo": {
+    "descricao": "JSON de conteudo e modulos por idioma",
+    "diagrama": "mainStore.lp_conteudo -> LandingPageDinamica escolhe idioma ativo -> RenderModulos",
+    "arquivos": [
+      "src/components/LandingPageDinamica.vue",
+      "src/components/ModulosDinamicos/RenderModulos.vue"
+    ],
+    "regras": [
+      "Array de idiomas com propriedade ativo",
+      "Cada idioma possui modulos[] com tipo, ativo, conteudo"
+    ],
+    "exemplo": "[{ idioma: 'pt-br', ativo: true, modulos: [...] }]",
+    "relacionados": ["modulos_dinamicos"]
+  },
+  "lp_formulario_v5": {
+    "descricao": "Configuracao de formularios dinamicos V5",
+    "diagrama": "mainStore.lp_formulario -> FormularioSistemaPadrao -> FormularioDinamico_V5",
+    "arquivos": [
+      "src/Formularios/FormularioDinamico_V5.vue",
+      "docs/ADMIN/FORMULARIOS-V5-CONDICIONAIS-VALIDACOES-LAYOUT.md"
+    ],
+    "regras": [
+      "formularios[] contem id e campos",
+      "layoutFormulario define estilos globais",
+      "termos define LGPD/uso de imagem"
+    ],
+    "exemplo": "formularios: [{ id: 'principal', campos: [...] }]",
+    "relacionados": ["layout_formulario"]
+  },
+  "layout_formulario": {
+    "descricao": "Estilos do formulario (variant, density, colors)",
+    "diagrama": "mainStore.lp_formulario.layoutFormulario -> formularioStore.layoutFormulario",
+    "arquivos": [
+      "src/stores/formularioStore.js",
+      "docs/ADMIN/FORMULARIOS-V5-CONDICIONAIS-VALIDACOES-LAYOUT.md"
+    ],
+    "regras": [
+      "layoutFormulario.estilosVisuais pode sobrescrever cores",
+      "campo usa layoutFormulario para props do Vuetify"
+    ],
+    "exemplo": "layoutFormulario: { variant: 'outlined', density: 'compact' }",
+    "relacionados": ["lp_formulario_v5"]
+  },
+  "acompanhante": {
+    "descricao": "Fluxo de acompanhantes (colaborador) e cota",
+    "diagrama": "VerifcaStatusPadrao -> colaboradorStore -> formularioStore envia colaborador",
+    "arquivos": [
+      "src/stores/colaboradorStore.js",
+      "src/stores/formularioStore.js"
+    ],
+    "regras": [
+      "cota define limite de acompanhantes",
+      "duplicidade por cpf/email deve ser evitada"
+    ],
+    "exemplo": "colaboradorStore.cota > colaboradores.length",
+    "relacionados": ["submit", "rsvp"]
   },
   "submit": {
-    "descricao": "Fluxo de submissão de formulário com proteção anti-conflito",
-    "diagrama": "submit() → submitting=true → Bloqueia watchers → POST /updatePaxEvento → Resposta → Atualiza pax → submitting=false → Watchers executam",
+    "descricao": "Fluxo de submissao com protecao anti-conflito",
+    "diagrama": "submit() -> submitting=true -> POST /updatePaxEvento -> atualiza pax -> submitting=false",
     "arquivos": [
       "src/stores/formularioStore.js",
       "docs/SUBMIT-ROBUSTO.md"
     ],
     "regras": [
-      "Flag submitting DEVE bloquear watchers e botões",
-      "Processar acao_submit.comparadores antes de enviar",
-      "Aplicar acao_submit.transicoes no payload",
-      "Converter datas ISO → BR antes de enviar",
-      "Limpar pesquisaCpfEmailConfig após sucesso"
+      "submitting bloqueia watchers e botoes",
+      "processar acao_submit.comparadores antes de enviar",
+      "aplicar transicoes no payload"
     ],
-    "exemplo": "if (this.submitting) return; this.submitting = true; try { await POST } finally { this.submitting = false; }",
-    "relacionados": ["rsvp", "acao_submit"]
+    "exemplo": "if (this.submitting) return; this.submitting = true; try { ... } finally { this.submitting = false; }",
+    "relacionados": ["acao_submit", "rsvp"]
   },
   "acao_submit": {
-    "descricao": "Transições e comparadores aplicados no submit quando chave não encontrada",
-    "diagrama": "submit() → isOptinRuntime? → Validar comparadores → Aplicar transicoes ao pax → Enviar",
+    "descricao": "Transicoes e comparadores aplicados no submit",
+    "diagrama": "submit() -> validar comparadores -> aplicar transicoes -> enviar",
     "arquivos": [
       "src/stores/formularioStore.js",
       "src/flow/core/ActionExecutor.js"
     ],
     "regras": [
       "Configurado em runtime_rule.acao.acao_submit",
-      "Comparadores validam antes de enviar (igual, contem, em, vazio, preenchido)",
-      "Transicoes sobrescrevem campos (tabela: 'pax', campo: 'status_presenca', valor: 'EM ANALISE')",
-      "Se comparador falha, submit é bloqueado"
+      "Comparadores bloqueiam submit se falhar",
+      "Transicoes sobrescrevem campos"
     ],
-    "exemplo": "acao_submit: { transicoes: [{ tabela: 'pax', campo: 'status_presenca', valor: 'EM ANALISE' }] }",
+    "exemplo": "transicoes: [{ tabela: 'pax', campo: 'status_presenca', valor: 'EM ANALISE' }]",
     "relacionados": ["submit", "chave"]
   }
 }

@@ -1,0 +1,168 @@
+{
+  "status_presenca": {
+    "origem": "API /verificapresenca -> pax.status_presenca",
+    "transformacoes": [
+      "VerifcaStatusPadrao() avalia valor",
+      "FlowResolver.evaluateStatusRules() decide acao",
+      "ActionExecutor.execute() aplica acao"
+    ],
+    "destino": [
+      "formularioStore.pax.status_presenca",
+      "FormularioSistemaPadrao (card de status)"
+    ],
+    "valores_possiveis": [
+      "PENDENTE",
+      "CONFIRMADO",
+      "INSCRITO",
+      "EM ANALISE",
+      "ANALISAR INSCRICAO",
+      "CANCELADO",
+      "REJEITADO",
+      "PRAZO VENCIDO",
+      "PERDEU O PRAZO"
+    ]
+  },
+  "cadastroIgo": {
+    "origem": "verificaUrl() detecta link cripto + evento_cadastroIgo=true",
+    "transformacoes": [
+      "ativarFormularios('CADASTRO_IGO')",
+      "mainStore.cadastroIgo = true"
+    ],
+    "destino": [
+      "ModuloSobre.vue (botao)",
+      "ModuloCabecalho.vue (botao inteligente)",
+      "LandingPageDinamica.vue (fallback)"
+    ],
+    "valores_possiveis": [true, false]
+  },
+  "lpFlow": {
+    "origem": "API /puxaevento -> campo lp_flow (JSON)",
+    "transformacoes": [
+      "mainStore.puxaDadosAppData() parseia JSON",
+      "mainStore.lpFlow = JSON.parse()"
+    ],
+    "destino": [
+      "FlowResolver.resolve()",
+      "ActionExecutor.execute()",
+      "getMensagemDoFlow()"
+    ],
+    "estrutura": {
+      "status_rules": "Array de regras por status",
+      "runtime_rules": "Array de regras de runtime",
+      "mapa_formularios": "Mapeamento de form_id",
+      "condicoes_fluxo": "Condicoes globais",
+      "mensagens": "Mensagens por status",
+      "fallbacks": "Fallbacks do fluxo"
+    }
+  },
+  "lp_conteudo": {
+    "origem": "API /puxaevento -> campo lp_conteudo (JSON)",
+    "transformacoes": [
+      "mainStore.lp_conteudo = JSON.parse()",
+      "LandingPageDinamica escolhe idioma ativo"
+    ],
+    "destino": [
+      "RenderModulos renderiza modulos",
+      "ModuloCabecalho/ModuloFooter separados"
+    ]
+  },
+  "lp_formulario": {
+    "origem": "API /puxaevento -> campo lp_formulario (JSON)",
+    "transformacoes": [
+      "mainStore.lp_formulario = JSON.parse()",
+      "FormularioSistemaPadrao usa formularios V5"
+    ],
+    "destino": [
+      "FormularioDinamico_V5",
+      "CampoDinamico"
+    ]
+  },
+  "lp_estilos": {
+    "origem": "API /puxaevento -> campo lp_estilo (JSON)",
+    "transformacoes": [
+      "mainStore.lp_estilos = JSON.parse()"
+    ],
+    "destino": [
+      "Modulos dinamicos (estilos globais)",
+      "DialogoUniversal (configuracoes dialogos)"
+    ]
+  },
+  "lp_modulos": {
+    "origem": "API /puxaevento -> campo lp_modulos (JSON)",
+    "transformacoes": [
+      "mainStore.lp_modulos = JSON.parse()"
+    ],
+    "destino": [
+      "UploadRules",
+      "UploadProcessor"
+    ]
+  },
+  "runtime": {
+    "origem": "verificaUrl() monta runtime (modo_entrada, funcao_chave)",
+    "transformacoes": [
+      "mainStore.runtime = {...}",
+      "FlowResolver.evaluateRuntimeRules()"
+    ],
+    "destino": [
+      "ActionExecutor.execute()"
+    ]
+  },
+  "pesquisaCpfEmailConfig": {
+    "origem": "runtime_rule.acao.tipo = pesquisa_cpf_email",
+    "transformacoes": [
+      "ActionExecutor seta mainStore.pesquisaCpfEmailConfig"
+    ],
+    "destino": [
+      "formComponenteChave.vue",
+      "formularioStore"
+    ]
+  },
+  "chaveUnicaConfig": {
+    "origem": "runtime_rule.acao.tipo = chave_unica",
+    "transformacoes": [
+      "ActionExecutor seta mainStore.chaveUnicaConfig"
+    ],
+    "destino": [
+      "FormularioChaveUnica.vue"
+    ]
+  },
+  "pax": {
+    "origem": "API /verificapresenca ou /updatePaxEvento",
+    "transformacoes": [
+      "formularioStore.pax = pax",
+      "submit atualiza pax com resposta"
+    ],
+    "destino": [
+      "FormularioSistemaPadrao",
+      "FlowResolver"
+    ],
+    "campos_principais": [
+      "id_pax_evento",
+      "nome",
+      "email",
+      "cpf",
+      "celular",
+      "status_presenca",
+      "generico1-10",
+      "upload1-5"
+    ]
+  },
+  "universalMsg": {
+    "origem": "mostraUniversalMsg()",
+    "transformacoes": [
+      "mainStore.universalMsg recebe merge",
+      "preset-helpers aplica presets"
+    ],
+    "destino": [
+      "DialogoUniversal.vue"
+    ],
+    "campos": {
+      "titulo": "Titulo do dialog",
+      "texto": "Corpo principal",
+      "texto2": "Texto secundario",
+      "dialog": "boolean",
+      "dialog_config": "Customizacao visual",
+      "imagem": "Config de imagem"
+    }
+  }
+}

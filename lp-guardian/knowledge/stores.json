@@ -1,83 +1,73 @@
 {
   "mainStore": {
     "arquivo": "src/stores/mainStore.pinia.js",
-    "responsabilidade": "Store central com configuração do evento, LP, flow, mensagens e flags globais",
+    "responsabilidade": "Store central com configuracao do evento, LP e flow",
     "state": {
-      "dadosEvento": "Objeto com config do evento (id, nome, controles, datas, local)",
-      "lp_estilos": "Estilos globais da LP (JSON parseado)",
-      "lp_conteudo": "Conteúdo estático dos módulos (JSON parseado)",
-      "lp_modulos": "Configuração de uploads (JSON parseado)",
-      "lp_formulario": "Configuração de formulários V5 (JSON parseado)",
-      "lpFlow": "Flow RSVP completo (JSON parseado)",
-      "lpFlowVersao": "Versão do flow",
-      "universalMsg": "Objeto para DialogoUniversal (titulo, texto, dialog, dialog_config)",
-      "cadastroIgo": "boolean - Ativa redirecionamento IGO",
-      "runtime": "Objeto com contexto de runtime (modo_entrada, funcao_chave)",
-      "pesquisaCpfEmailConfig": "Config do pesquisa_cpf_email (form_id_fallback, acao_submit)",
-      "chaveUnicaConfig": "Config do chave_unica (tipo_chave, form_id_encontrado, mensagem)",
-      "formularioAtivoId": "ID do formulário ativo",
-      "pax": "Dados do PAX principal (obsoleto, usar formularioStore.pax)"
+      "lp_estilos": "Estilos globais da LP",
+      "lp_conteudo": "Conteudo e modulos por idioma",
+      "lp_modulos": "Config de modulos e uploads",
+      "lp_formulario": "Config do formulario V5",
+      "lpFlow": "Flow RSVP",
+      "lpFlowVersao": "Versao do flow",
+      "runtime": "Contexto de runtime (modo_entrada, funcao_chave)",
+      "pesquisaCpfEmailConfig": "Config de pesquisa cpf/email",
+      "chaveUnicaConfig": "Config de chave unica",
+      "formularioAtivoId": "ID do formulario ativo",
+      "cadastroIgo": "Ativa redirect IGO",
+      "universalMsg": "Mensagem global para DialogoUniversal",
+      "dadosEvento": "Dados do evento e controles"
     },
     "actions": [
-      "puxaDadosAppData(base64, query) - Carrega evento completo da API",
-      "mostraUniversalMsg(dados) - Exibe dialog universal",
-      "hideUniversalMsg() - Fecha dialog e executa scroll",
-      "updateDadosEvento(dados) - Atualiza config do evento"
+      "puxaDadosAppData(base64, query)",
+      "mostraUniversalMsg(dados)",
+      "hideUniversalMsg()",
+      "updateDadosEvento(dados)"
     ],
     "getters": [
-      "isMenuDesktop - Menu desktop ativo?",
-      "currentEvento - Atalho para dadosEvento",
-      "isFormClosed - Formulário fechado?"
+      "isMenuDesktop",
+      "currentEvento",
+      "isFormClosed"
     ],
     "conexoes": ["formularioStore", "colaboradorStore", "eventoStore"],
     "persistencia": null
   },
   "formularioStore": {
     "arquivo": "src/stores/formularioStore.js",
-    "responsabilidade": "Store do formulário principal com PAX, respostas, validações e submit",
+    "responsabilidade": "Store do formulario principal com PAX, respostas e submit",
     "state": {
-      "pax": "Objeto com dados do participante (nome, email, cpf, status_presenca, etc)",
-      "respostas": "Snapshot de campos respondidos (sync com FormularioDinamico_V5)",
-      "mostraFormulario_padrao": "boolean - Mostrar formulário padrão?",
-      "mostraPerguntas": "boolean - Mostrar seção de perguntas?",
-      "mostraChave": "boolean - Mostrar formulário de chave?",
-      "isPaxPrincipal": "boolean - Contexto principal ou adicional?",
-      "submitting": "boolean - Flag de bloqueio durante submit",
-      "loadingForm": "boolean - Loading de envio",
-      "layoutFormulario": "Estilos do formulário (variant, density, color, etc)",
-      "rules": "Regras de validação (required, email, cpf, etc)"
+      "pax": "Dados do participante",
+      "respostas": "Snapshot de respostas",
+      "submitting": "Flag de submit",
+      "mostraFormulario_padrao": "Exibe formulario",
+      "mostraChave": "Exibe formulario de chave",
+      "layoutFormulario": "Estilos do formulario",
+      "listaUploads": "Uploads pendentes",
+      "identificationError": "Erro de identificacao"
     },
     "actions": [
-      "submit(jantar, options) - Submete formulário com proteção anti-conflito",
-      "identificarPaxPorChave(dadosIdentificacao) - Identifica via chave única",
-      "initLayoutFormulario() - Inicializa estilos do formulário",
-      "setRespostas(obj) - Seta snapshot de respostas"
+      "submit(jantar, options)",
+      "identificarPaxPorChave(dadosIdentificacao)",
+      "initLayoutFormulario()",
+      "setRespostas(obj)"
     ],
-    "getters": [
-      "dadosEvento - Atalho para mainStore.dadosEvento"
-    ],
+    "getters": ["dadosEvento"],
     "conexoes": ["mainStore", "colaboradorStore"],
     "persistencia": null
   },
   "colaboradorStore": {
     "arquivo": "src/stores/colaboradorStore.js",
-    "responsabilidade": "Store de acompanhantes com lista, cota e validação de duplicidade",
+    "responsabilidade": "Acompanhantes e cota",
     "state": {
       "colaboradores": "Array de acompanhantes",
-      "cota": "Número máximo de acompanhantes",
-      "mostraAdicionar": "boolean - Mostrar botão adicionar?",
-      "adicionandoAcompanhante": "boolean - Flag de contexto de adição",
-      "nomesConfirmados": "Array de nomes únicos confirmados",
-      "cpfsConfirmados": "Array de CPFs únicos (sem formatação)",
-      "emailsConfirmados": "Array de emails únicos (lowercase)",
-      "mostraFormulario_colaborador": "boolean - Mostrar formulário de colaborador?"
+      "cota": "Numero maximo",
+      "mostraFormulario_colaborador": "Exibe formulario do colaborador"
     },
     "actions": [
-      "adicionarColaborador(pax) - Adiciona novo acompanhante",
-      "removerColaborador(index) - Remove acompanhante",
-      "verificarCPFExistente(cpf) - Verifica duplicidade de CPF",
-      "verificarEmailExistente(email) - Verifica duplicidade de email",
-      "atribuirCota(cota) - Seta cota de acompanhantes"
+      "adicionarColaborador(pax)",
+      "removerColaborador(index)",
+      "verificarCPFExistente(cpf)",
+      "verificarEmailExistente(email)",
+      "atribuirCota(cota)"
     ],
     "getters": [],
     "conexoes": ["mainStore", "formularioStore"],
@@ -85,53 +75,123 @@
   },
   "eventoStore": {
     "arquivo": "src/stores/eventoStore.js",
-    "responsabilidade": "Store para seleção de agências, clientes e eventos no admin panel",
+    "responsabilidade": "Selecao de agencias/cliente/evento no admin",
     "state": {
-      "agencias": "Array de agências disponíveis",
-      "clientes": "Array de clientes da agência selecionada",
-      "eventos": "Array de eventos do cliente selecionado",
-      "agenciaSelecionada": "ID da agência selecionada",
-      "clienteSelecionado": "ID do cliente selecionado",
-      "eventoSelecionado": "ID do evento selecionado",
-      "dadosEvento": "Dados completos do evento selecionado"
+      "agencias": "Lista de agencias",
+      "clientes": "Lista de clientes",
+      "eventos": "Lista de eventos",
+      "eventoSelecionado": "Evento ativo"
     },
     "actions": [
-      "carregarAgencias() - Carrega lista de agências",
-      "selecionarAgencia(agenciaId) - Seleciona agência e carrega clientes",
-      "selecionarCliente(clienteData) - Seleciona cliente e carrega eventos",
-      "selecionarEvento(eventoId) - Seleciona evento e carrega dados"
+      "carregarAgencias()",
+      "selecionarAgencia(agenciaId)",
+      "selecionarCliente(clienteData)",
+      "selecionarEvento(eventoId)"
     ],
-    "getters": [
-      "agenciasItems - Para v-select",
-      "clientesItems - Para v-select",
-      "eventosItems - Para v-select",
-      "isLoading - Algum loading ativo?"
-    ],
+    "getters": ["agenciasItems", "clientesItems", "eventosItems", "isLoading"],
     "conexoes": ["adminStore"],
     "persistencia": "sessionStorage"
   },
   "adminStore": {
     "arquivo": "src/stores/adminStore.js",
-    "responsabilidade": "Store de autenticação e autorização do admin panel",
+    "responsabilidade": "Autenticacao e controle do admin",
     "state": {
-      "isAuthenticated": "boolean - Usuário autenticado?",
-      "user": "Objeto com dados do usuário (categoria, email)",
-      "token": "Token JWT",
-      "drawer": "boolean - Drawer do admin aberto?",
-      "editorMode": "boolean - Modo editor ativo?",
-      "previewMode": "boolean - Modo preview ativo?"
+      "isAuthenticated": "Usuario autenticado",
+      "user": "Dados do usuario",
+      "token": "JWT",
+      "editorMode": "Modo editor",
+      "previewMode": "Modo preview"
     },
-    "actions": [
-      "initAuth() - Inicializa autenticação com dados salvos",
-      "login(credentials) - Login de administrador",
-      "logout() - Logout completo",
-      "checkAuth() - Verifica se token é válido"
-    ],
-    "getters": [
-      "hasIGORSVPPermission - categoria === 'IGO_RSVP'?",
-      "isLoggedIn - isAuthenticated && token?"
-    ],
+    "actions": ["initAuth()", "login(credentials)", "logout()", "checkAuth()"],
+    "getters": ["hasIGORSVPPermission", "isLoggedIn"],
     "conexoes": ["eventoStore"],
     "persistencia": "localStorage"
+  },
+  "agenda1Store": {
+    "arquivo": "src/stores/agenda1Store.js",
+    "responsabilidade": "Programacao do dia 1",
+    "state": {
+      "programacao": "Lista de blocos e horarios"
+    },
+    "actions": ["addScheduleItem", "updateScheduleItem", "removeScheduleItem", "updateSchedule", "addTab", "updateTab"],
+    "getters": ["getScheduleByTab", "allScheduleItems", "getScheduleByTime"],
+    "conexoes": [],
+    "persistencia": null
+  },
+  "agenda2Store": {
+    "arquivo": "src/stores/agenda2Store.js",
+    "responsabilidade": "Programacao do dia 2",
+    "state": {
+      "programacao": "Lista de blocos e horarios"
+    },
+    "actions": ["addScheduleItem", "updateScheduleItem", "removeScheduleItem", "updateSchedule", "addTab", "updateTab"],
+    "getters": ["getScheduleByTab", "allScheduleItems", "getScheduleByTime"],
+    "conexoes": [],
+    "persistencia": null
+  },
+  "agendaSalasStore": {
+    "arquivo": "src/stores/agendaSalasStore.js",
+    "responsabilidade": "Programacao de salas",
+    "state": {
+      "salas": "Lista de salas e programacao"
+    },
+    "actions": ["updateSchedule"],
+    "getters": [],
+    "conexoes": [],
+    "persistencia": null
+  },
+  "dataNascimentoStore": {
+    "arquivo": "src/stores/dataNascimentoStore.js",
+    "responsabilidade": "Gerencia data de nascimento",
+    "state": {"dataNascimento": "Data selecionada"},
+    "actions": ["setDataNascimento"],
+    "getters": [],
+    "conexoes": [],
+    "persistencia": null
+  },
+  "dataselectStore": {
+    "arquivo": "src/stores/dataselectStore.js",
+    "responsabilidade": "Gerencia selecao de datas",
+    "state": {"data": "Data selecionada"},
+    "actions": ["setData"],
+    "getters": [],
+    "conexoes": [],
+    "persistencia": null
+  },
+  "vencimentoCnhStore": {
+    "arquivo": "src/stores/vencimentoCnhStore.js",
+    "responsabilidade": "Gerencia vencimento de CNH",
+    "state": {"vencimento": "Data selecionada"},
+    "actions": ["setVencimento"],
+    "getters": [],
+    "conexoes": [],
+    "persistencia": null
+  },
+  "footerStore": {
+    "arquivo": "src/stores/footerStore.js",
+    "responsabilidade": "Conteudo do footer",
+    "state": {"conteudo": "Dados do rodape"},
+    "actions": ["setFooter"],
+    "getters": [],
+    "conexoes": [],
+    "persistencia": null
+  },
+  "faqStore": {
+    "arquivo": "src/stores/faq.js",
+    "responsabilidade": "FAQ da LP",
+    "state": {"lista": "Perguntas e respostas"},
+    "actions": ["setFaq"],
+    "getters": [],
+    "conexoes": [],
+    "persistencia": null
+  },
+  "userStore": {
+    "arquivo": "src/stores/user.js",
+    "responsabilidade": "Dados de usuario",
+    "state": {"user": "Dados do usuario"},
+    "actions": ["setUser"],
+    "getters": [],
+    "conexoes": [],
+    "persistencia": null
   }
 }

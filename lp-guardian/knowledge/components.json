@@ -1,7 +1,7 @@
 {
   "LandingPageDinamica": {
     "arquivo": "src/components/LandingPageDinamica.vue",
-    "responsabilidade": "Componente raiz da landing page que orquestra todos os módulos",
+    "responsabilidade": "Componente raiz da LP que orquestra modulos e dialogos",
     "props": {},
     "emits": [],
     "slots": [],
@@ -11,9 +11,11 @@
   },
   "RenderModulos": {
     "arquivo": "src/components/ModulosDinamicos/RenderModulos.vue",
-    "responsabilidade": "Orquestrador que renderiza módulos dinamicamente baseado em lp_conteudo",
+    "responsabilidade": "Renderiza modulos dinamicos do lp_conteudo",
     "props": {
-      "conteudo": "Array de módulos do idioma ativo"
+      "conteudo": "Array de modulos do idioma ativo",
+      "estilos": "Estilos globais da LP",
+      "idioma": "Idioma ativo"
     },
     "emits": [],
     "slots": [],
@@ -23,22 +25,22 @@
   },
   "ModuloCabecalho": {
     "arquivo": "src/components/ModulosDinamicos/ModuloCabecalho.vue",
-    "responsabilidade": "Header fixo com logo, menu horizontal/drawer mobile, botões de ação",
+    "responsabilidade": "Header com menu e botoes de acao",
     "props": {
-      "conteudo": "Configuração do cabeçalho (logos, menu, botoes)",
-      "estilos": "Estilos globais da LP"
+      "conteudo": "Config do cabecalho",
+      "estilos": "Estilos globais"
     },
     "emits": [],
     "slots": [],
     "dependencias": [],
     "usa_stores": ["mainStore"],
-    "exemplo_uso": "<ModuloCabecalho :conteudo=\"cabecalhoConfig\" :estilos=\"lp_estilos\" />"
+    "exemplo_uso": "<ModuloCabecalho :conteudo=\"cabecalho\" :estilos=\"lp_estilos\" />"
   },
   "ModuloFormulario": {
     "arquivo": "src/components/ModulosDinamicos/ModuloFormulario.vue",
-    "responsabilidade": "Wrapper para formulários (FormularioSistemaPadrao ou FormularioChaveUnica)",
+    "responsabilidade": "Wrapper para formularios do sistema",
     "props": {
-      "modulo": "Configuração do módulo formulário",
+      "modulo": "Config do modulo formulario",
       "estilos": "Estilos globais"
     },
     "emits": [],
@@ -49,59 +51,107 @@
   },
   "ModuloSobre": {
     "arquivo": "src/components/ModulosDinamicos/ModuloSobre.vue",
-    "responsabilidade": "Seção 'Sobre' com descrição do evento e botão de cadastro IGO",
+    "responsabilidade": "Secao sobre o evento + botao cadastro IGO",
     "props": {
-      "modulo": "Configuração do módulo sobre"
+      "modulo": "Config do modulo sobre"
     },
     "emits": [],
     "slots": [],
     "dependencias": [],
     "usa_stores": ["mainStore"],
-    "exemplo_uso": "<ModuloSobre :modulo=\"sobreModulo\" />"
+    "exemplo_uso": "<ModuloSobre :modulo=\"sobre\" />"
   },
   "ModuloAgenda": {
     "arquivo": "src/components/ModulosDinamicos/ModuloAgenda.vue",
-    "responsabilidade": "Programação do evento com tabs por dia",
+    "responsabilidade": "Programacao do evento por dia",
     "props": {
-      "modulo": "Configuração da agenda"
+      "modulo": "Config da agenda"
     },
     "emits": [],
     "slots": [],
     "dependencias": [],
     "usa_stores": [],
-    "exemplo_uso": "<ModuloAgenda :modulo=\"agendaModulo\" />"
+    "exemplo_uso": "<ModuloAgenda :modulo=\"agenda\" />"
   },
   "ModuloPalestrantes": {
     "arquivo": "src/components/ModulosDinamicos/ModuloPalestrantes.vue",
-    "responsabilidade": "Grid de palestrantes com cards customizáveis",
+    "responsabilidade": "Grid de palestrantes",
     "props": {
-      "modulo": "Configuração de palestrantes (listas, fotos, bios)"
+      "modulo": "Config de palestrantes"
     },
     "emits": [],
     "slots": [],
     "dependencias": [],
     "usa_stores": [],
-    "exemplo_uso": "<ModuloPalestrantes :modulo=\"palestrantesModulo\" />"
+    "exemplo_uso": "<ModuloPalestrantes :modulo=\"palestrantes\" />"
+  },
+  "ModuloContato": {
+    "arquivo": "src/components/ModulosDinamicos/ModuloContato.vue",
+    "responsabilidade": "Secao de contato",
+    "props": {
+      "modulo": "Config de contato"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": [],
+    "exemplo_uso": "<ModuloContato :modulo=\"contato\" />"
+  },
+  "ModuloCronometro": {
+    "arquivo": "src/components/ModulosDinamicos/ModuloCronometro.vue",
+    "responsabilidade": "Contador regressivo para o evento",
+    "props": {
+      "modulo": "Config do cronometro"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": [],
+    "exemplo_uso": "<ModuloCronometro :modulo=\"cronometro\" />"
+  },
+  "ModuloLocal": {
+    "arquivo": "src/components/ModulosDinamicos/ModuloLocal.vue",
+    "responsabilidade": "Secao de local do evento",
+    "props": {
+      "modulo": "Config do local"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": [],
+    "exemplo_uso": "<ModuloLocal :modulo=\"local\" />"
+  },
+  "ModuloRedesSociais": {
+    "arquivo": "src/components/ModulosDinamicos/ModuloRedesSociais.vue",
+    "responsabilidade": "Links de redes sociais",
+    "props": {
+      "modulo": "Config das redes"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": [],
+    "exemplo_uso": "<ModuloRedesSociais :modulo=\"redes\" />"
   },
   "ModuloFooter": {
     "arquivo": "src/components/ModulosDinamicos/ModuloFooter.vue",
-    "responsabilidade": "Rodapé com informações legais e copyright",
+    "responsabilidade": "Rodape e avisos legais",
     "props": {
-      "conteudo": "Configuração do footer"
+      "conteudo": "Config do footer"
     },
     "emits": [],
     "slots": [],
     "dependencias": [],
     "usa_stores": [],
-    "exemplo_uso": "<ModuloFooter :conteudo=\"footerConfig\" />"
+    "exemplo_uso": "<ModuloFooter :conteudo=\"footer\" />"
   },
   "FormularioSistemaPadrao": {
     "arquivo": "src/Formularios/FormularioSistemaPadrao.vue",
-    "responsabilidade": "Formulário principal com campos dinâmicos, estados (pendente/confirmado/final), acompanhantes",
+    "responsabilidade": "Formulario principal com campos dinamicos, status e acompanhantes",
     "props": {
-      "dados-iniciais": "Dados iniciais do PAX",
-      "configuracao-prop": "Configuração do formulário",
-      "acompanhante_config": "Se é contexto de acompanhante"
+      "dados-iniciais": "Dados iniciais do pax",
+      "configuracao-prop": "Configuracao do formulario",
+      "acompanhante_config": "Contexto de acompanhante"
     },
     "emits": ["submit"],
     "slots": [],
@@ -109,22 +159,50 @@
     "usa_stores": ["mainStore", "formularioStore", "colaboradorStore"],
     "exemplo_uso": "<FormularioSistemaPadrao @submit=\"handleSubmit\" />"
   },
+  "FormularioDinamico_V5": {
+    "arquivo": "src/Formularios/FormularioDinamico_V5.vue",
+    "responsabilidade": "Motor de campos dinamicos V5",
+    "props": {
+      "campos": "Lista de campos",
+      "respostas": "Objeto de respostas",
+      "layout": "Estilos do formulario"
+    },
+    "emits": ["update:respostas"],
+    "slots": [],
+    "dependencias": ["CampoDinamico"],
+    "usa_stores": ["formularioStore"],
+    "exemplo_uso": "<FormularioDinamico_V5 :campos=\"campos\" />"
+  },
+  "CampoDinamico": {
+    "arquivo": "src/Formularios/CampoDinamico.vue",
+    "responsabilidade": "Renderiza um campo dinamico e suas validacoes",
+    "props": {
+      "campo": "Config do campo",
+      "modelValue": "Valor atual",
+      "respostas": "Snapshot de respostas"
+    },
+    "emits": ["update:modelValue"],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": ["formularioStore"],
+    "exemplo_uso": "<CampoDinamico :campo=\"campo\" v-model=\"valor\" />"
+  },
   "FormularioChaveUnica": {
     "arquivo": "src/Formularios/FormularioChaveUnica.vue",
-    "responsabilidade": "Identificação por chave única (email, celular, CPF, código)",
+    "responsabilidade": "Identificacao por chave unica (email, cpf, celular, codigo)",
     "props": {
-      "tipo_chave": "Tipo de chave (email, celular, cpf, codigo)",
-      "mensagem_nao_encontrado": "Mensagem quando não encontrar"
+      "tipo_chave": "Tipo da chave",
+      "mensagem_nao_encontrado": "Mensagem de erro"
     },
     "emits": ["submit", "identificado"],
     "slots": [],
     "dependencias": [],
     "usa_stores": ["mainStore", "formularioStore"],
-    "exemplo_uso": "<FormularioChaveUnica tipo_chave=\"email\" @identificado=\"handleIdentificado\" />"
+    "exemplo_uso": "<FormularioChaveUnica tipo_chave=\"email\" />"
   },
   "formComponenteChave": {
     "arquivo": "src/Formularios/formComponenteChave.vue",
-    "responsabilidade": "Pesquisa por celular com fallback para email/CPF (3 tentativas)",
+    "responsabilidade": "Pesquisa por chave com tentativa limitada",
     "props": {},
     "emits": [],
     "slots": [],
@@ -132,29 +210,81 @@
     "usa_stores": ["mainStore", "formularioStore"],
     "exemplo_uso": "<formComponenteChave />"
   },
+  "FormularioAereo": {
+    "arquivo": "src/Formularios/FormularioAereo.vue",
+    "responsabilidade": "Formulario de dados aereos (quando habilitado)",
+    "props": {},
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": ["formularioStore"],
+    "exemplo_uso": "<FormularioAereo />"
+  },
+  "ModuloTransfer": {
+    "arquivo": "src/Formularios/ModuloTransfer.vue",
+    "responsabilidade": "Modulo de transfer (quando habilitado)",
+    "props": {},
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": ["formularioStore"],
+    "exemplo_uso": "<ModuloTransfer />"
+  },
+  "ModuloHospedagem": {
+    "arquivo": "src/Formularios/ModuloHospedagem.vue",
+    "responsabilidade": "Modulo de hospedagem (quando habilitado)",
+    "props": {},
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": ["formularioStore"],
+    "exemplo_uso": "<ModuloHospedagem />"
+  },
   "DialogoUniversal": {
     "arquivo": "src/components/dialogs/DialogoUniversal.vue",
-    "responsabilidade": "Dialog universal configurável para mensagens de status, erros, confirmações",
+    "responsabilidade": "Dialog universal configuravel para mensagens",
     "props": {
-      "config": "Objeto com titulo, texto, texto2, dialog, dialog_config, imagem, qrcode"
+      "config": "Objeto de mensagem"
     },
     "emits": ["update:config"],
     "slots": [],
     "dependencias": [],
     "usa_stores": [],
-    "exemplo_uso": "<DialogoUniversal :config=\"universalMsg\" @update:config=\"hideMsg\" />"
+    "exemplo_uso": "<DialogoUniversal :config=\"universalMsg\" />"
   },
   "UploadFiles": {
     "arquivo": "src/components/uploads/UploadFiles.vue",
-    "responsabilidade": "Componente de upload de arquivos (passaporte, CNH, etc)",
+    "responsabilidade": "Componente de upload de arquivos",
     "props": {
       "campo": "Nome do campo de upload",
-      "socio": "Tipo de sócio (AÉREO, TRANSFER, HOSPEDAGEM)"
+      "socio": "Tipo de socio"
     },
     "emits": ["uploaded"],
     "slots": [],
     "dependencias": [],
     "usa_stores": ["mainStore", "formularioStore"],
-    "exemplo_uso": "<UploadFiles campo=\"upload1\" socio=\"AÉREO\" />"
+    "exemplo_uso": "<UploadFiles campo=\"upload1\" />"
+  },
+  "SkeletonLoad": {
+    "arquivo": "src/components/SkeletonLoad.vue",
+    "responsabilidade": "Skeleton durante carregamento inicial",
+    "props": {},
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": [],
+    "exemplo_uso": "<Skeleton />"
+  },
+  "ContadorErro": {
+    "arquivo": "src/components/ContadorErro.vue",
+    "responsabilidade": "Contador de erros de carregamento",
+    "props": {
+      "contador": "Numero de erros"
+    },
+    "emits": [],
+    "slots": [],
+    "dependencias": [],
+    "usa_stores": [],
+    "exemplo_uso": "<Contador :contador=\"contadorErro\" />"
   }
 }

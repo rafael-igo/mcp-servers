@@ -87,24 +87,24 @@
   "operadores_condicao": {
     "igual": "Valor exato (normalizado)",
     "diferente": "Valor diferente",
-    "contem": "Contém substring (case insensitive)",
-    "nao_contem": "Não contém substring",
-    "em": "Valor está na lista",
-    "nao_em": "Valor não está na lista",
+    "contem": "Contem substring (case insensitive)",
+    "nao_contem": "Nao contem substring",
+    "em": "Valor esta na lista",
+    "nao_em": "Valor nao esta na lista",
     "vazio": "Campo vazio/null",
     "preenchido": "Campo tem valor",
-    "maior": "Número maior que",
-    "menor": "Número menor que",
-    "maior_igual": "Número maior ou igual",
-    "menor_igual": "Número menor ou igual"
+    "maior": "Numero maior que",
+    "menor": "Numero menor que",
+    "maior_igual": "Numero maior ou igual",
+    "menor_igual": "Numero menor ou igual"
   },
   "tipos_acao": {
-    "abrir_form": "Abre formulário especificado (form_id)",
-    "mensagem": "Exibe mensagem/dialog (titulo, texto, texto2, classe)",
-    "abrir_upload": "Solicita upload de documento",
-    "verificar_acompanhante": "Abre formulário de acompanhante",
-    "pesquisa_cpf_email": "Abre pesquisa por CPF/email (3 tentativas)",
-    "chave_unica": "Abre formulário de chave única"
+    "abrir_form": "Abre formulario especificado (form_id)",
+    "mensagem": "Exibe mensagem/dialog",
+    "abrir_upload": "Solicita upload",
+    "verificar_acompanhante": "Formulario de acompanhante",
+    "pesquisa_cpf_email": "Pesquisa por CPF/email",
+    "chave_unica": "Formulario de chave unica"
   },
   "status_presenca_validos": [
     "PENDENTE",
@@ -132,5 +132,42 @@
     "3. campo_tipo_5.controles.mensagens_status",
     "4. lpFlow.mensagens",
     "5. Fallback hardcoded (getMensagemDoFlow)"
-  ]
+  ],
+  "modos_entrada": [
+    "link_cripto",
+    "optin",
+    "redesocial",
+    "virtual",
+    "chave",
+    "voucher"
+  ],
+  "tipos_modulo": [
+    "cabecalho",
+    "sobre",
+    "formulario",
+    "agenda",
+    "palestrantes",
+    "contato",
+    "cronometro",
+    "local",
+    "redes",
+    "footer"
+  ],
+  "status_upload": [
+    "PENDENTE_ARQUIVO",
+    "ARQUIVO_RECEBIDO",
+    "ARQUIVO_APROVADO",
+    "ARQUIVO_REJEITADO"
+  ],
+  "tipos_campo_v5": {
+    "cep": "Campo CEP com busca automatica",
+    "select_sim_nao": "Select sim/nao com layout padrao",
+    "select_multiplo": "Select multiplo",
+    "date": "Conversao de datas",
+    "titulo_subtitulo": "Campos de titulo e subtitulo",
+    "modo_titulo": "Secao modo titulo",
+    "email": "Validacao de email",
+    "cpf": "Validacao de CPF",
+    "upload": "Campos de upload1-5"
+  }
 }

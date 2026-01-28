@@ -36,6 +36,8 @@ FLOWS = load_knowledge("flows.json")
 COMPONENTS = load_knowledge("components.json")
 STORES = load_knowledge("stores.json")
 RULES = load_knowledge("rules.json")
+DOCS_INDEX = load_knowledge("docs_index.json")
+DATA_FLOWS = load_knowledge("data_flows.json")
 
 
 @mcp.tool()
@@ -44,7 +46,7 @@ def explain_flow(nome_fluxo: str) -> str:
     Explica um fluxo específico do sistema.
 
     Args:
-        nome_fluxo: Nome do fluxo (link_cripto, rsvp, chave, optin, cadastro_igo, upload)
+        nome_fluxo: Nome do fluxo (ex: arquitetura, link_cripto, rsvp, chave, optin, cadastro_igo, upload)
 
     Returns:
         JSON com diagrama, arquivos envolvidos, regras e exemplos
@@ -275,105 +277,48 @@ def search_docs(query: str, limite: int = 5) -> str:
     Returns:
         JSON com documentos relevantes e trechos
     """
-    # Base de documentação indexada
-    docs_index = {
-        "link cripto": {
-            "arquivo": ".claude/CLAUDE.md",
-            "secao": "Sistema de Link Criptografado",
-            "relevancia": "Documentação completa do fluxo de link criptografado"
-        },
-        "cadastro igo": {
-            "arquivo": ".claude/CLAUDE.md",
-            "secao": "Redirecionamento para Hotsite IGO",
-            "relevancia": "Como funciona o redirecionamento para sistema IGO"
-        },
-        "flow rsvp": {
-            "arquivo": "docs/novoflow_rsvp/01-ARQUITETURA.md",
-            "secao": "Arquitetura do Flow RSVP v2.0",
-            "relevancia": "FlowResolver, ActionExecutor, ConditionEvaluator"
-        },
-        "campos pax": {
-            "arquivo": "docs/novoflow_rsvp/02-CAMPOS-PAX.md",
-            "secao": "Campos do PAX",
-            "relevancia": "138+ campos disponíveis no banco de dados"
-        },
-        "uploads": {
-            "arquivo": "docs/novoflow_rsvp/03-UPLOADS.md",
-            "secao": "Sistema de Uploads",
-            "relevancia": "UploadProcessor, UploadRules"
-        },
-        "formularios v5": {
-            "arquivo": "docs/admin/FORMULARIOS-V5-CONDICIONAIS-VALIDACOES-LAYOUT.md",
-            "secao": "Formulários Dinâmicos V5",
-            "relevancia": "Campos condicionais, validações, layout"
-        },
-        "runtime rules": {
-            "arquivo": "docs/admin/step-by-step-runtime-flow-rsvp.md",
-            "secao": "Runtime Rules",
-            "relevancia": "Configuração de runtime_rules no admin"
-        },
-        "mensagens status": {
-            "arquivo": "docs/MANUAL-MENSAGENS-STATUS-ADMIN.md",
-            "secao": "Mensagens Dinâmicas por Status",
-            "relevancia": "Hierarquia de mensagens, presets, dialog_config"
-        },
-        "presets dinamicos": {
-            "arquivo": ".claude/CLAUDE.md",
-            "secao": "Sistema de Presets Dinâmicos",
-            "relevancia": "Customização de textos, ícones, estilos via admin"
-        },
-        "mescla condicional": {
-            "arquivo": "docs/step-by-step/MESCLA_CONDICIONAL_IMPLEMENTACAO.md",
-            "secao": "Mescla Condicional",
-            "relevancia": "Placeholders, condicionais {{#if}}, operadores"
-        },
-        "status rules": {
-            "arquivo": "docs/novoflow_rsvp/01-ARQUITETURA.md",
-            "secao": "Status Rules",
-            "relevancia": "Regras baseadas em status_presenca"
-        },
-        "chave unica": {
-            "arquivo": ".claude/CLAUDE.md",
-            "secao": "Runtime Rules - Chave",
-            "relevancia": "pesquisa_cpf_email vs chave_unica"
-        },
-        "acompanhante": {
-            "arquivo": "src/stores/colaboradorStore.js",
-            "secao": "Colaborador Store",
-            "relevancia": "Gerenciamento de acompanhantes"
-        },
-        "submit": {
-            "arquivo": "docs/SUBMIT-ROBUSTO.md",
-            "secao": "Submit Robusto",
-            "relevancia": "Proteção anti-conflito, submitting flag"
-        },
-        "drawer mobile": {
-            "arquivo": ".claude/CLAUDE.md",
-            "secao": "Bugs Corrigidos",
-            "relevancia": "Correção do drawer mobile com Teleport"
-        }
-    }
+    # Base de documentação indexada (via knowledge/docs_index.json)
+    docs_index = DOCS_INDEX
+    entradas = []
+    if isinstance(docs_index, dict):
+        for termo, doc in docs_index.items():
+            entradas.append({"termo": termo, **doc})
+    elif isinstance(docs_index, list):
+        entradas = docs_index
 
-    query_lower = query.lower()
+    query_lower = query.lower().strip()
     resultados = []
 
-    for termo, doc in docs_index.items():
-        # Calcular relevância
-        palavras_query = query_lower.split()
-        palavras_termo = termo.split()
+    for doc in entradas:
+        termos = doc.get("termos") or []
+        termo_unico = doc.get("termo")
+        if termo_unico:
+            termos.append(termo_unico)
+        termos = [t for t in termos if t]
 
-        # Match exato ou parcial
+        # Calcular relevancia por termos/keywords
         score = 0
-        for pq in palavras_query:
-            for pt in palavras_termo:
-                if pq in pt or pt in pq:
+        palavras_query = query_lower.split()
+        for termo in termos:
+            termo_lower = termo.lower()
+            for pq in palavras_query:
+                if pq in termo_lower or termo_lower in pq:
                     score += 1
 
         if score > 0:
+            status = doc.get("status", "")
+            if status == "atual":
+                score += 1
+            elif status == "refatoracao":
+                score += 0.5
+
             resultados.append({
-                "termo": termo,
+                "termos": termos,
                 "score": score,
-                **doc
+                "arquivo": doc.get("arquivo"),
+                "secao": doc.get("secao"),
+                "status": doc.get("status"),
+                "relevancia": doc.get("relevancia")
             })
 
     # Ordenar por score e limitar
@@ -384,7 +329,7 @@ def search_docs(query: str, limite: int = 5) -> str:
         return json.dumps({
             "query": query,
             "resultados": [],
-            "sugestao": "Tente buscar por: link cripto, flow rsvp, formularios v5, mensagens status, runtime rules"
+            "sugestao": "Tente buscar por: link cripto, flow rsvp, formularios v5, mensagens status, runtime chave"
         }, ensure_ascii=False, indent=2)
 
     return json.dumps({
@@ -437,88 +382,8 @@ def trace_data_flow(campo: str) -> str:
     Returns:
         JSON com origem, transformações e destino do campo
     """
-    # Mapa de fluxo de dados
-    data_flows = {
-        "status_presenca": {
-            "origem": "API /verificapresenca → pax.status_presenca",
-            "transformacoes": [
-                "VerifcaStatusPadrao() avalia valor",
-                "StatusRules.parse() normaliza",
-                "FlowResolver.evaluateStatusRules() decide ação"
-            ],
-            "destino": [
-                "formularioStore.pax.status_presenca",
-                "Exibido em FormularioSistemaPadrao (card de status)"
-            ],
-            "valores_possiveis": ["PENDENTE", "CONFIRMADO", "INSCRITO", "EM ANALISE", "CANCELADO", "PRAZO VENCIDO"]
-        },
-        "cadastroIgo": {
-            "origem": "verificaUrl() quando detecta link cripto + evento_cadastroIgo=true",
-            "transformacoes": [
-                "ativarFormularios('CADASTRO_IGO')",
-                "mainStore.cadastroIgo = true"
-            ],
-            "destino": [
-                "ModuloSobre.vue (botão de redirecionamento)",
-                "ModuloCabecalho.vue (botão inteligente)",
-                "LandingPageDinamica.vue (botão fallback)"
-            ],
-            "valores_possiveis": [true, false]
-        },
-        "lpFlow": {
-            "origem": "API /puxaevento → campo lp_flow (JSON string)",
-            "transformacoes": [
-                "mainStore.puxaDadosAppData() parseia JSON",
-                "mainStore.lpFlow = JSON.parse()"
-            ],
-            "destino": [
-                "FlowResolver.resolve() lê rules",
-                "ActionExecutor.execute() executa ações",
-                "getMensagemDoFlow() busca mensagens"
-            ],
-            "estrutura": {
-                "status_rules": "Array de regras por status",
-                "runtime_rules": "Array de regras de runtime",
-                "mapa_formularios": "Mapeamento de form_id",
-                "condicoes_fluxo": "Condições globais",
-                "mensagens": "Mensagens por status"
-            }
-        },
-        "pax": {
-            "origem": "API /verificapresenca ou /gravapaxevento",
-            "transformacoes": [
-                "fnVerificaPresenca() popula formularioStore.pax",
-                "submit() atualiza com resposta da API"
-            ],
-            "destino": [
-                "formularioStore.pax (state central)",
-                "FormularioSistemaPadrao (campos do formulário)",
-                "VerifcaStatusPadrao (processamento de regras)"
-            ],
-            "campos_principais": [
-                "id_pax_evento", "nome", "email", "cpf", "celular",
-                "status_presenca", "generico1-10", "upload1-5"
-            ]
-        },
-        "universalMsg": {
-            "origem": "Qualquer lugar que chame mostraUniversalMsg()",
-            "transformacoes": [
-                "mainStore.mostraUniversalMsg(dados) faz merge",
-                "dialog_config pode customizar visual"
-            ],
-            "destino": [
-                "DialogoUniversal.vue renderiza",
-                "Overlay modal sobre a página"
-            ],
-            "campos": {
-                "titulo": "Título do dialog",
-                "texto": "Corpo principal",
-                "texto2": "Texto secundário",
-                "dialog": "boolean - mostra/esconde",
-                "dialog_config": "Customização visual"
-            }
-        }
-    }
+    # Mapa de fluxo de dados (via knowledge/data_flows.json)
+    data_flows = DATA_FLOWS if isinstance(DATA_FLOWS, dict) and DATA_FLOWS else {}
 
     # Buscar campo (com ou sem prefixo)
     campo_limpo = campo.replace("pax.", "").replace("mainStore.", "").replace("formularioStore.", "")

@@ -1,0 +1,114 @@
+[
+  {
+    "termos": ["base conhecimento", "guardiao", "indice", "fonte de verdade"],
+    "arquivo": "docs/BASE_CONHECIMENTO_GUARDIAO.md",
+    "secao": "Indice geral",
+    "status": "atual",
+    "relevancia": "Mapa principal com o que e atual vs legado"
+  },
+  {
+    "termos": ["link cripto", "criptografado", "cadastro igo", "verificaurl"],
+    "arquivo": ".claude/CLAUDE.md",
+    "secao": "Link cripto + cadastro IGO",
+    "status": "atual",
+    "relevancia": "Fluxo completo do link cripto e redirect"
+  },
+  {
+    "termos": ["flow rsvp", "rsvp v2", "flow resolver", "action executor", "condition evaluator"],
+    "arquivo": "docs/NOVOFLOW_RSVP/01-ARQUITETURA.md",
+    "secao": "Arquitetura RSVP",
+    "status": "refatoracao",
+    "relevancia": "Descricao do fluxo e componentes principais"
+  },
+  {
+    "termos": ["campos pax", "pax", "campos banco"],
+    "arquivo": "docs/NOVOFLOW_RSVP/02-CAMPOS-PAX.md",
+    "secao": "Campos PAX",
+    "status": "atual",
+    "relevancia": "Lista de campos usados no fluxo"
+  },
+  {
+    "termos": ["uploads", "upload", "documentos"],
+    "arquivo": "docs/NOVOFLOW_RSVP/03-UPLOADS.md",
+    "secao": "Uploads",
+    "status": "atual",
+    "relevancia": "Regras e status de upload"
+  },
+  {
+    "termos": ["formularios v5", "formulario dinamico", "campos dinamicos", "layout formulario"],
+    "arquivo": "docs/ADMIN/FORMULARIOS-V5-CONDICIONAIS-VALIDACOES-LAYOUT.md",
+    "secao": "V5 - Condicionais e Layout",
+    "status": "atual",
+    "relevancia": "Regras de condicional e layout do form V5"
+  },
+  {
+    "termos": ["implementacao v5", "formulario v5 client"],
+    "arquivo": "docs/ADMIN/FORMULARIOS-V5-IMPLEMENTACAO-CLIENT.md",
+    "secao": "V5 - Implementacao",
+    "status": "atual",
+    "relevancia": "Detalhes de implementacao no client"
+  },
+  {
+    "termos": ["mensagens status", "mensagens dinamicas", "dialogo universal"],
+    "arquivo": "docs/MANUAL-MENSAGENS-STATUS-ADMIN.md",
+    "secao": "Mensagens",
+    "status": "atual",
+    "relevancia": "Hierarquia de mensagens e exemplos"
+  },
+  {
+    "termos": ["textos dinamicos", "placeholders", "mescla condicional", "presets"],
+    "arquivo": "docs/ARQUITETURA-TEXTOS-DINAMICOS.md",
+    "secao": "Textos dinamicos",
+    "status": "atual",
+    "relevancia": "Placeholders, condicionais e presets"
+  },
+  {
+    "termos": ["runtime funcao chave", "chave", "voucher", "pesquisa cpf"],
+    "arquivo": "docs/RUNTIME_FUNCAO_CHAVE.md",
+    "secao": "Runtime chave",
+    "status": "atual",
+    "relevancia": "Regras de runtime para chave e voucher"
+  },
+  {
+    "termos": ["modulos dinamicos", "render modulos", "lp conteudo"],
+    "arquivo": "docs/MODULOS-DINAMICOS-INTEGRACAO.md",
+    "secao": "Integracao modulos",
+    "status": "em_implementacao",
+    "relevancia": "Integracao e correcoes do fluxo de modulos"
+  },
+  {
+    "termos": ["ajustes 2026", "correcoes", "bugs recentes"],
+    "arquivo": "docs/AJUSTES_LP_2026-01.md",
+    "secao": "Ajustes",
+    "status": "atual",
+    "relevancia": "Correcoes e melhorias recentes"
+  },
+  {
+    "termos": ["submit robusto", "submit centralizado", "submitting"],
+    "arquivo": "docs/SUBMIT-ROBUSTO.md",
+    "secao": "Submit",
+    "status": "atual",
+    "relevancia": "Regras do submit e bloqueio de watchers"
+  },
+  {
+    "termos": ["mescla condicional", "placeholders exemplos"],
+    "arquivo": "docs/step-by-step/MESCLA_CONDICIONAL_IMPLEMENTACAO.md",
+    "secao": "Mescla condicional",
+    "status": "atual",
+    "relevancia": "Exemplos e operadores"
+  },
+  {
+    "termos": ["secoes", "modo titulo", "campo tipo"],
+    "arquivo": "docs/SECAO-MODO-TITULO-IMPLEMENTACAO.md",
+    "secao": "Secoes",
+    "status": "atual",
+    "relevancia": "Modo titulo e secao no form"
+  },
+  {
+    "termos": ["placeholders sigaevento", "admin placeholders"],
+    "arquivo": "docs/ADMIN/INSTRUCOES-PLACEHOLDERS-SIGAEVENTO.md",
+    "secao": "Placeholders admin",
+    "status": "parcial",
+    "relevancia": "Referencia de placeholders no admin"
+  }
+]
